@@ -39,11 +39,13 @@ ENV/
 htmlcov/
 .tox/
 
+# Examples (no subir a git)
+examples/
+
 # Output
 output/
 *.json
 *.csv
-!examples/*.json
 
 # OS
 .DS_Store

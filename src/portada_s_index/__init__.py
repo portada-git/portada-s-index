@@ -1,5 +1,8 @@
 """
 Portada S-Index: Biblioteca de algoritmos de similitud para desambiguación de términos históricos.
+
+INTERFAZ PRINCIPAL: JSON
+Todas las entradas y salidas se manejan mediante JSON.
 """
 
 from .similarity import (
@@ -31,6 +34,17 @@ from .utils import (
     export_summary_report,
 )
 
+from .json_interface import (
+    calculate_similarity_json,
+    classify_terms_json,
+    classify_terms_with_report_json,
+    calculate_similarity_from_file,
+    classify_terms_from_file,
+    classify_terms_with_report_from_file,
+    process_batch_json,
+    process_batch_from_file,
+)
+
 __version__ = "0.1.0"
 
 __all__ = [
@@ -40,27 +54,38 @@ __all__ = [
     "SimilarityResult",
     "TermClassification",
     "ClassificationLevel",
-    # Funciones principales
+    # Funciones principales (uso interno)
     "calculate_similarity",
     "classify_terms",
     "normalize_text",
-    # Algoritmos individuales
+    # Algoritmos individuales (uso interno)
     "levenshtein_distance",
     "levenshtein_ratio",
     "levenshtein_distance_ocr",
     "levenshtein_ratio_ocr",
     "jaro_winkler_similarity",
     "ngram_similarity",
-    # Utilidades
+    # Utilidades (uso interno)
     "load_voices_from_file",
     "load_terms_from_csv",
     "export_classifications_to_json",
     "export_classifications_by_level",
     "generate_summary_report",
     "export_summary_report",
+    # INTERFAZ JSON (uso principal)
+    "calculate_similarity_json",
+    "classify_terms_json",
+    "classify_terms_with_report_json",
+    "calculate_similarity_from_file",
+    "classify_terms_from_file",
+    "classify_terms_with_report_from_file",
+    "process_batch_json",
+    "process_batch_from_file",
 ]
 
 
 def main() -> None:
     print("Portada S-Index - Biblioteca de similitud de términos")
     print(f"Versión: {__version__}")
+    print("\nInterfaz principal: JSON")
+    print("Usa las funciones *_json() o *_from_file() para entrada/salida JSON")
