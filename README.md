@@ -4,9 +4,13 @@
 
 **Biblioteca Python para desambiguación de términos históricos mediante algoritmos de similitud de cadenas**
 
-[![Python Version](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPI version](https://img.shields.io/pypi/v/portada-s-index.svg)](https://pypi.org/project/portada-s-index/)
+[![Python Version](https://img.shields.io/pypi/pyversions/portada-s-index.svg)](https://pypi.org/project/portada-s-index/)
+[![License](https://img.shields.io/pypi/l/portada-s-index.svg)](https://github.com/danro-dev/portada-s-index/blob/main/LICENSE)
+[![Downloads](https://img.shields.io/pypi/dm/portada-s-index.svg)](https://pypi.org/project/portada-s-index/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Maintained](https://img.shields.io/badge/maintained-yes-green.svg)](https://github.com/danro-dev/portada-s-index)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/danro-dev/portada-s-index/pulls)
 
 [Características](#características) •
 [Instalación](#instalación) •
@@ -67,6 +71,18 @@ Clasificación automática en 5 niveles de confianza:
 - Python >= 3.12
 - Sin dependencias externas (solo biblioteca estándar de Python)
 
+### Instalación desde PyPI
+
+```bash
+pip install portada-s-index
+```
+
+O con uv (más rápido):
+
+```bash
+uv pip install portada-s-index
+```
+
 ### Instalación desde código fuente
 
 ```bash
@@ -75,7 +91,7 @@ cd portada-s-index
 pip install -e .
 ```
 
-### Instalación con uv
+O con uv:
 
 ```bash
 uv pip install -e .
