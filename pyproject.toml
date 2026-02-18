@@ -32,8 +32,8 @@ Documentation = "https://github.com/danro-dev/portada-s-index#readme"
 portada-s-index = "portada_s_index:main"
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/portada_s_index"]
