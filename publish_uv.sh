@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Script para publicar portada-s-index en PyPI usando UV
-# Uso: ./publish_uv.sh [test|prod]
+# Uso: ./publish_uv.sh <version> [test|prod]
+# Ejemplo: ./publish_uv.sh 0.2.0 prod
 
 set -e  # Salir si hay algún error
 
@@ -29,11 +30,43 @@ print_error() {
     echo -e "${RED}✗${NC} $1"
 }
 
-# Verificar argumento
-MODE=${1:-prod}
+# Función para mostrar uso
+show_usage() {
+    echo "Uso: ./publish_uv.sh <version> [test|prod]"
+    echo ""
+    echo "Argumentos:"
+    echo "  version    Versión a publicar (ej: 0.2.0, 1.0.0)"
+    echo "  mode       Modo de publicación: test o prod (default: prod)"
+    echo ""
+    echo "Ejemplos:"
+    echo "  ./publish_uv.sh 0.2.0          # Publica 0.2.0 en PyPI producción"
+    echo "  ./publish_uv.sh 0.2.0 test     # Publica 0.2.0 en TestPyPI"
+    echo "  ./publish_uv.sh 0.2.0 prod     # Publica 0.2.0 en PyPI producción"
+    echo ""
+}
 
+# Verificar argumentos
+if [ $# -eq 0 ]; then
+    print_error "Falta el argumento de versión"
+    echo ""
+    show_usage
+    exit 1
+fi
+
+VERSION=$1
+MODE=${2:-prod}
+
+# Validar formato de versión (X.Y.Z)
+if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    print_error "Formato de versión inválido: $VERSION"
+    echo "Usa formato semántico: X.Y.Z (ej: 0.2.0, 1.0.0)"
+    exit 1
+fi
+
+# Validar modo
 if [ "$MODE" != "test" ] && [ "$MODE" != "prod" ]; then
-    print_error "Modo inválido. Usa: ./publish_uv.sh [test|prod]"
+    print_error "Modo inválido: $MODE"
+    echo "Usa 'test' o 'prod'"
     exit 1
 fi
 
@@ -43,6 +76,7 @@ echo "║       PUBLICAR PORTADA-S-INDEX EN PYPI (usando UV)                ║"
 echo "╚════════════════════════════════════════════════════════════════════╝"
 echo ""
 
+print_step "Versión: $VERSION"
 if [ "$MODE" == "test" ]; then
     print_warning "Modo: TestPyPI (prueba)"
 else
@@ -59,7 +93,35 @@ if [ ! -f "pyproject.toml" ]; then
 fi
 print_success "Directorio correcto"
 
-# Paso 2: Verificar que uv está instalado
+# Paso 2: Actualizar versión en pyproject.toml
+print_step "Actualizando versión en pyproject.toml..."
+if command -v sed &> /dev/null; then
+    # Obtener versión actual
+    CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+    
+    if [ "$CURRENT_VERSION" == "$VERSION" ]; then
+        print_warning "La versión ya es $VERSION"
+    else
+        # Actualizar versión
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS
+            sed -i '' "s/^version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+        else
+            # Linux
+            sed -i "s/^version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+        fi
+        print_success "Versión actualizada: $CURRENT_VERSION → $VERSION"
+    fi
+else
+    print_warning "sed no disponible, actualiza manualmente la versión en pyproject.toml"
+    read -p "¿La versión en pyproject.toml es $VERSION? (s/n): " confirm
+    if [ "$confirm" != "s" ]; then
+        print_error "Actualiza la versión en pyproject.toml y vuelve a ejecutar"
+        exit 1
+    fi
+fi
+
+# Paso 3: Verificar que uv está instalado
 print_step "Verificando UV..."
 if ! command -v uv &> /dev/null; then
     print_error "UV no está instalado"
@@ -73,12 +135,12 @@ if ! command -v uv &> /dev/null; then
 fi
 print_success "UV instalado: $(uv --version)"
 
-# Paso 3: Limpiar builds anteriores
+# Paso 4: Limpiar builds anteriores
 print_step "Limpiando builds anteriores..."
 rm -rf dist/ build/ *.egg-info src/*.egg-info
 print_success "Limpieza completada"
 
-# Paso 4: Ejecutar tests
+# Paso 5: Ejecutar tests
 print_step "Ejecutando tests..."
 if [ -f "../test_portada_external.py" ]; then
     cd ..
@@ -94,7 +156,7 @@ else
     print_warning "No se encontraron tests externos, continuando..."
 fi
 
-# Paso 5: Construir el paquete con uv
+# Paso 6: Construir el paquete con uv
 print_step "Construyendo el paquete con UV..."
 uv build
 if [ $? -eq 0 ]; then
@@ -104,7 +166,7 @@ else
     exit 1
 fi
 
-# Paso 6: Verificar el paquete
+# Paso 7: Verificar el paquete
 print_step "Verificando el paquete..."
 if command -v twine &> /dev/null; then
     twine check dist/*
@@ -119,15 +181,15 @@ else
     print_warning "Instala con: uv pip install twine"
 fi
 
-# Paso 7: Mostrar archivos generados
+# Paso 8: Mostrar archivos generados
 echo ""
 print_step "Archivos generados:"
 ls -lh dist/
 echo ""
 
-# Paso 8: Confirmar antes de subir
+# Paso 9: Confirmar antes de subir
 if [ "$MODE" == "prod" ]; then
-    echo -e "${YELLOW}⚠ ADVERTENCIA: Vas a subir a PyPI PRODUCCIÓN${NC}"
+    echo -e "${YELLOW}⚠ ADVERTENCIA: Vas a subir versión $VERSION a PyPI PRODUCCIÓN${NC}"
     echo ""
     read -p "¿Estás seguro de continuar? (escribe 'si' para confirmar): " confirm
     if [ "$confirm" != "si" ]; then
@@ -136,7 +198,7 @@ if [ "$MODE" == "prod" ]; then
     fi
 fi
 
-# Paso 9: Subir a PyPI usando uv
+# Paso 10: Subir a PyPI usando uv
 echo ""
 print_step "Subiendo a PyPI con UV..."
 

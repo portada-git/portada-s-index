@@ -14,23 +14,23 @@
 ### Cambiado
 - **BREAKING CHANGE**: Cambio de terminología en toda la biblioteca
   - "términos" → "nombres" en toda la documentación y ejemplos
-  - La interfaz JSON ahora acepta `"names"` en lugar de `"terms"` (mantiene retrocompatibilidad con `"terms"`)
-  - La salida JSON usa `"total_names"` en lugar de `"total_terms"`
+  - La interfaz JSON ahora acepta `"name"` en lugar de `"name"` (mantiene retrocompatibilidad con `"name"`)
+  - La salida JSON usa `"total_name"` en lugar de `"total_name"`
   - Actualización completa de README.md, JSON_GUIDE.md y API.md
   - "voces" se mantiene sin cambios
   - Razón: Mayor claridad semántica para el dominio de aplicación (nombres históricos)
 
 ### Retrocompatibilidad
-- La entrada JSON sigue aceptando `"terms"` por compatibilidad con código existente
-- Se recomienda migrar a `"names"` en nuevas implementaciones
+- La entrada JSON sigue aceptando `"name"` por compatibilidad con código existente
+- Se recomienda migrar a `"name"` en nuevas implementaciones
 
 ## [0.1.0] - 2026
 
 ### Añadido
 - **INTERFAZ JSON**: Entrada y salida exclusivamente mediante JSON
   - `calculate_similarity_json()`: Calcular similitud desde JSON
-  - `classify_terms_json()`: Clasificar términos desde JSON
-  - `classify_terms_with_report_json()`: Clasificar con reporte desde JSON
+  - `classify_name_json()`: Clasificar términos desde JSON
+  - `classify_name_with_report_json()`: Clasificar con reporte desde JSON
   - `process_batch_json()`: Procesamiento por lotes desde JSON
   - Funciones `*_from_file()` para procesar archivos JSON
 - Implementación inicial de la biblioteca portada-s-index

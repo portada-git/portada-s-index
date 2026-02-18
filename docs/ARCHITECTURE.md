@@ -51,8 +51,8 @@ Portada S-Index es una biblioteca Python diseñada con una arquitectura modular 
 │                    CAPA DE INTERFAZ                          │
 │                                                              │
 │  calculate_similarity_json()                                 │
-│  classify_terms_json()                                       │
-│  classify_terms_with_report_json()                          │
+│  classify_name_json()                                       │
+│  classify_name_with_report_json()                          │
 │  process_batch_json()                                        │
 │                                                              │
 │  Responsabilidad:                                            │
@@ -67,7 +67,7 @@ Portada S-Index es una biblioteca Python diseñada con una arquitectura modular 
 │                  CAPA DE LÓGICA DE NEGOCIO                   │
 │                                                              │
 │  calculate_similarity()                                      │
-│  classify_terms()                                            │
+│  classify_name()                                            │
 │  normalize_text()                                            │
 │                                                              │
 │  Clases:                                                     │
@@ -103,7 +103,7 @@ Portada S-Index es una biblioteca Python diseñada con una arquitectura modular 
 │                      CAPA DE UTILIDADES                      │
 │                                                              │
 │  load_voices_from_file()                                     │
-│  load_terms_from_csv()                                       │
+│  load_name_from_csv()                                       │
 │  export_classifications_to_json()                           │
 │  generate_summary_report()                                   │
 │                                                              │
@@ -298,8 +298,8 @@ def calculate_similarity(
     3. Retornar resultados por algoritmo
     """
 
-def classify_terms(
-    terms: List[str],
+def classify_name(
+    name: List[str],
     voices: List[str],
     frequencies: Optional[Dict[str, int]],
     config: Optional[SimilarityConfig],
@@ -386,7 +386,7 @@ def calculate_similarity_json(
     }
     """
 
-def classify_terms_json(
+def classify_name_json(
     input_json: str | Dict[str, Any]
 ) -> str:
     """
@@ -394,7 +394,7 @@ def classify_terms_json(
     
     Entrada:
     {
-        "names": ["aleman", "frances"],
+        "name": ["aleman", "frances"],
         "voices": ["aleman", "frances"],
         "frequencies": {...},  // opcional
         "config": {...},  // opcional
@@ -403,12 +403,12 @@ def classify_terms_json(
     
     Salida:
     {
-        "total_names": 2,
+        "total_name": 2,
         "classifications": [...]
     }
     """
 
-def classify_terms_with_report_json(
+def classify_name_with_report_json(
     input_json: str | Dict[str, Any]
 ) -> str:
     """
@@ -417,7 +417,7 @@ def classify_terms_with_report_json(
     Salida:
     {
         "report": {
-            "total_names": 2,
+            "total_name": 2,
             "total_occurrences": 180,
             "by_level": {...},
             "coverage": {...}
@@ -444,7 +444,7 @@ def process_batch_json(
                 "data": {...}
             },
             {
-                "type": "classify_terms",
+                "type": "classify_name",
                 "data": {...}
             }
         ],
@@ -477,10 +477,10 @@ def calculate_similarity_from_file(
 ) -> str:
     """Lee JSON de archivo, procesa y opcionalmente guarda."""
 
-def classify_terms_from_file(...) -> str:
+def classify_name_from_file(...) -> str:
     """Clasifica desde archivo JSON."""
 
-def classify_terms_with_report_from_file(...) -> str:
+def classify_name_with_report_from_file(...) -> str:
     """Clasifica con reporte desde archivo."""
 
 def process_batch_from_file(...) -> str:
@@ -512,7 +512,7 @@ def load_voices_from_file(
     - Mapeo voz_normalizada -> entidad
     """
 
-def load_terms_from_csv(
+def load_name_from_csv(
     file_path: str | Path
 ) -> Tuple[List[str], Dict[str, int]]:
     """
@@ -587,13 +587,13 @@ def export_summary_report(
 ```
 Usuario
   │
-  ├─> classify_terms_json(input_json)
+  ├─> classify_name_json(input_json)
   │     │
   │     ├─> Parsear JSON
   │     ├─> Extraer parámetros
   │     ├─> SimilarityConfig.from_dict() [si hay config]
   │     │
-  │     └─> classify_terms(terms, voices, ...)
+  │     └─> classify_name(name, voices, ...)
   │           │
   │           ├─> Para cada nombre:
   │           │     │
@@ -637,8 +637,8 @@ Usuario
   │           │
   │           ├─> Ejecutar según tipo:
   │           │     ├─> calculate_similarity_json()
-  │           │     ├─> classify_terms_json()
-  │           │     └─> classify_terms_with_report_json()
+  │           │     ├─> classify_name_json()
+  │           │     └─> classify_name_with_report_json()
   │           │
   │           ├─> Capturar resultado o error
   │           │
@@ -708,7 +708,7 @@ class SimilarityResult:
 
 ```python
 # Fachada simple
-result = classify_terms_json(input_json)
+result = classify_name_json(input_json)
 
 # Oculta complejidad interna:
 # - Parseo JSON
@@ -722,9 +722,9 @@ result = classify_terms_json(input_json)
 El proceso de clasificación sigue Template Method:
 
 ```python
-def classify_terms(...):
+def classify_name(...):
     # Plantilla del algoritmo
-    for term in terms:
+    for term in name:
         # 1. Calcular similitud (paso variable)
         results = calculate_similarity(...)
         
@@ -780,9 +780,9 @@ Las capas superiores dependen de abstracciones:
 # json_interface.py depende de similarity.py (abstracción)
 
 # Permite usar similarity.py sin JSON:
-from portada_s_index.similarity import classify_terms
+from portada_s_index.similarity import classify_name
 
-results = classify_terms(terms, voices)  # Sin JSON
+results = classify_name(name, voices)  # Sin JSON
 ```
 
 ### 4. Composición sobre Herencia

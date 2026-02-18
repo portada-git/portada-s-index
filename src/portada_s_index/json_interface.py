@@ -12,7 +12,7 @@ from .similarity import (
     SimilarityConfig,
     ClassificationLevel,
     calculate_similarity,
-    classify_terms,
+    classify_name,
 )
 
 
@@ -78,13 +78,13 @@ def calculate_similarity_json(input_json: str | Dict[str, Any]) -> str:
     return json.dumps(output, ensure_ascii=False)
 
 
-def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
+def classify_name_json(input_json: str | Dict[str, Any]) -> str:
     """
     Clasifica nombres desde entrada JSON.
     
     Formato de entrada:
     {
-        "names": ["aleman", "frances", "ingles"],
+        "name": ["aleman", "frances", "ingles"],
         "voices": ["aleman", "alemana", "frances", "francesa"],
         "frequencies": {  // opcional
             "aleman": 100,
@@ -114,8 +114,8 @@ def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
         data = input_json
     
     # Extraer parámetros (soportar tanto "names" como "terms" por compatibilidad)
-    terms = data.get("names") or data.get("terms")
-    if not terms:
+    names = data.get("names") or data.get("terms")
+    if not names:
         raise ValueError("Se requiere 'names' en la entrada JSON")
     
     voices = data["voices"]
@@ -129,9 +129,9 @@ def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
     # Mapeo de voces opcional
     voice_to_entity = data.get("voice_to_entity", None)
     
-    # Clasificar términos
-    classifications = classify_terms(
-        terms=terms,
+    # Clasificar nombres
+    classifications = classify_name(
+        name=names,
         voices=voices,
         frequencies=frequencies,
         config=config,
@@ -147,11 +147,11 @@ def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
     return json.dumps(output, ensure_ascii=False)
 
 
-def classify_terms_with_report_json(input_json: str | Dict[str, Any]) -> str:
+def classify_name_with_report_json(input_json: str | Dict[str, Any]) -> str:
     """
     Clasifica nombres y genera reporte desde entrada JSON.
     
-    Formato de entrada: igual que classify_terms_json
+    Formato de entrada: igual que classify_name_json
     
     Args:
         input_json: String JSON o diccionario con los datos de entrada
@@ -166,8 +166,8 @@ def classify_terms_with_report_json(input_json: str | Dict[str, Any]) -> str:
         data = input_json
     
     # Extraer parámetros (soportar tanto "names" como "terms" por compatibilidad)
-    terms = data.get("names") or data.get("terms")
-    if not terms:
+    names = data.get("names") or data.get("terms")
+    if not names:
         raise ValueError("Se requiere 'names' en la entrada JSON")
     
     voices = data["voices"]
@@ -181,9 +181,9 @@ def classify_terms_with_report_json(input_json: str | Dict[str, Any]) -> str:
     # Mapeo de voces opcional
     voice_to_entity = data.get("voice_to_entity", None)
     
-    # Clasificar términos
-    classifications = classify_terms(
-        terms=terms,
+    # Clasificar nombres
+    classifications = classify_name(
+        name=names,
         voices=voices,
         frequencies=frequencies,
         config=config,
@@ -193,7 +193,7 @@ def classify_terms_with_report_json(input_json: str | Dict[str, Any]) -> str:
     # Generar reporte
     from .utils import generate_summary_report
     
-    total_occurrences = sum(frequencies.values()) if frequencies else len(terms)
+    total_occurrences = sum(frequencies.values()) if frequencies else len(names)
     report = generate_summary_report(classifications, total_occurrences, config)
     
     # Convertir a formato JSON
@@ -236,7 +236,7 @@ def calculate_similarity_from_file(input_file: str | Path, output_file: Optional
     return result_json
 
 
-def classify_terms_from_file(input_file: str | Path, output_file: Optional[str | Path] = None) -> str:
+def classify_name_from_file(input_file: str | Path, output_file: Optional[str | Path] = None) -> str:
     """
     Clasifica términos desde archivo JSON de entrada.
     
@@ -252,7 +252,7 @@ def classify_terms_from_file(input_file: str | Path, output_file: Optional[str |
     with open(input_file, "r", encoding="utf-8") as f:
         data = json.load(f)
     
-    result_json = classify_terms_json(data)
+    result_json = classify_name_json(data)
     
     if output_file:
         output_file = Path(output_file)
@@ -263,7 +263,7 @@ def classify_terms_from_file(input_file: str | Path, output_file: Optional[str |
     return result_json
 
 
-def classify_terms_with_report_from_file(
+def classify_name_with_report_from_file(
     input_file: str | Path,
     output_file: Optional[str | Path] = None
 ) -> str:
@@ -282,7 +282,7 @@ def classify_terms_with_report_from_file(
     with open(input_file, "r", encoding="utf-8") as f:
         data = json.load(f)
     
-    result_json = classify_terms_with_report_json(data)
+    result_json = classify_name_with_report_json(data)
     
     if output_file:
         output_file = Path(output_file)
@@ -312,9 +312,9 @@ def process_batch_json(input_json: str | Dict[str, Any]) -> str:
                 }
             },
             {
-                "type": "classify_terms",
+                "type": "classify_name",
                 "data": {
-                    "terms": ["aleman", "frances"],
+                    "name": ["aleman", "frances"],
                     "voices": ["aleman", "frances"]
                 }
             }
@@ -359,8 +359,8 @@ def process_batch_json(input_json: str | Dict[str, Any]) -> str:
                     "status": "success",
                     "result": json.loads(result)
                 })
-            elif op_type == "classify_terms":
-                result = classify_terms_json(op_data)
+            elif op_type == "classify_name":
+                result = classify_name_json(op_data)
                 results.append({
                     "operation_index": i,
                     "type": op_type,
@@ -368,7 +368,7 @@ def process_batch_json(input_json: str | Dict[str, Any]) -> str:
                     "result": json.loads(result)
                 })
             elif op_type == "classify_with_report":
-                result = classify_terms_with_report_json(op_data)
+                result = classify_name_with_report_json(op_data)
                 results.append({
                     "operation_index": i,
                     "type": op_type,

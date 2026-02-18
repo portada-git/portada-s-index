@@ -8,7 +8,7 @@ from portada_s_index import (
     SimilarityConfig,
     ClassificationLevel,
     calculate_similarity,
-    classify_terms,
+    classify_name,
     normalize_text,
     levenshtein_distance,
     levenshtein_ratio,
@@ -75,27 +75,27 @@ def test_calculate_similarity():
     print("✓ test_calculate_similarity passed")
 
 
-def test_classify_terms():
+def test_classify_name():
     """Test de clasificación de términos."""
-    terms = ["aleman", "frances", "desconocido"]
+    name = ["aleman", "frances", "desconocido"]
     voices = ["aleman", "alemana", "frances", "francesa"]
     frequencies = {"aleman": 100, "frances": 80, "desconocido": 5}
     
-    classifications = classify_terms(
-        terms=terms,
+    classifications = classify_name(
+        name=name,
         voices=voices,
         frequencies=frequencies,
     )
     
-    assert len(classifications) == len(terms)
+    assert len(classifications) == len(name)
     
     for classification in classifications:
-        assert classification.term in terms
+        assert classification.term in name
         assert classification.frequency == frequencies[classification.term]
         assert isinstance(classification.classification, ClassificationLevel)
         assert classification.votes_approval >= 0
     
-    print("✓ test_classify_terms passed")
+    print("✓ test_classify_name passed")
 
 
 def test_similarity_config():
@@ -134,10 +134,10 @@ def test_similarity_config():
 
 def test_json_serialization():
     """Test de serialización JSON."""
-    terms = ["aleman"]
+    name = ["aleman"]
     voices = ["aleman", "alemana"]
     
-    classifications = classify_terms(terms, voices)
+    classifications = classify_name(name, voices)
     
     # Test to_dict
     for classification in classifications:
@@ -160,7 +160,7 @@ def test_json_serialization():
 
 def test_voice_to_entity_mapping():
     """Test de mapeo de voces a entidades."""
-    terms = ["aleman", "frances"]
+    name = ["aleman", "frances"]
     voices = ["aleman", "alemana", "frances", "francesa"]
     
     voice_to_entity = {
@@ -170,8 +170,8 @@ def test_voice_to_entity_mapping():
         "francesa": "FRANCIA",
     }
     
-    classifications = classify_terms(
-        terms=terms,
+    classifications = classify_name(
+        name=name,
         voices=voices,
         voice_to_entity=voice_to_entity,
     )
@@ -194,7 +194,7 @@ def run_all_tests():
     test_jaro_winkler()
     test_ngram_similarity()
     test_calculate_similarity()
-    test_classify_terms()
+    test_classify_name()
     test_similarity_config()
     test_json_serialization()
     test_voice_to_entity_mapping()

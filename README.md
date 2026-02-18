@@ -146,12 +146,12 @@ print(json.dumps(result, indent=2, ensure_ascii=False))
 ### Clasificar Nombres
 
 ```python
-from portada_s_index import classify_terms_json
+from portada_s_index import classify_name_json
 import json
 
 # Entrada JSON
 input_data = {
-    "names": ["aleman", "frances", "ingles"],
+    "name": ["aleman", "frances", "ingles"],
     "voices": ["aleman", "alemana", "frances", "francesa", "ingles", "inglesa"],
     "frequencies": {
         "aleman": 100,
@@ -161,26 +161,26 @@ input_data = {
 }
 
 # Procesar
-result_json = classify_terms_json(input_data)
+result_json = classify_name_json(input_data)
 result = json.loads(result_json)
 
-print(f"Nombres clasificados: {result['total_names']}")
+print(f"Nombres clasificados: {result['total_name']}")
 ```
 
 ### Clasificar con Reporte
 
 ```python
-from portada_s_index import classify_terms_with_report_json
+from portada_s_index import classify_name_with_report_json
 import json
 
-# Entrada JSON (mismo formato que classify_terms)
+# Entrada JSON (mismo formato que classify_name)
 input_data = {
-    "names": ["aleman", "frances"],
+    "name": ["aleman", "frances"],
     "voices": ["aleman", "frances"]
 }
 
 # Procesar
-result_json = classify_terms_with_report_json(input_data)
+result_json = classify_name_with_report_json(input_data)
 result = json.loads(result_json)
 
 # Acceder al reporte
@@ -205,9 +205,9 @@ input_data = {
             }
         },
         {
-            "type": "classify_terms",
+            "type": "classify_name",
             "data": {
-                "names": ["frances", "ingles"],
+                "name": ["frances", "ingles"],
                 "voices": ["frances", "ingles"]
             }
         }
@@ -228,10 +228,10 @@ print(f"Operaciones exitosas: {result['successful']}/{result['total_operations']
 ### Procesar desde Archivos
 
 ```python
-from portada_s_index import classify_terms_from_file
+from portada_s_index import classify_name_from_file
 
 # Procesar archivo JSON y guardar resultado
-result_json = classify_terms_from_file(
+result_json = classify_name_from_file(
     input_file="input.json",
     output_file="output.json"
 )
@@ -245,7 +245,7 @@ result_json = classify_terms_from_file(
 
 ```json
 {
-  "names": ["aleman", "frances"],
+  "name": ["aleman", "frances"],
   "voices": ["aleman", "frances"]
 }
 ```
@@ -254,7 +254,7 @@ result_json = classify_terms_from_file(
 
 ```json
 {
-  "names": ["aleman", "frances"],
+  "name": ["aleman", "frances"],
   "voices": ["aleman", "alemana", "frances", "francesa"],
   "frequencies": {
     "aleman": 100,
@@ -292,8 +292,8 @@ result_json = classify_terms_from_file(
 | Función | Descripción |
 |---------|-------------|
 | `calculate_similarity_json(input_json)` | Calcula similitud de un término con voces |
-| `classify_terms_json(input_json)` | Clasifica múltiples términos |
-| `classify_terms_with_report_json(input_json)` | Clasifica términos y genera reporte resumen |
+| `classify_name_json(input_json)` | Clasifica múltiples términos |
+| `classify_name_with_report_json(input_json)` | Clasifica términos y genera reporte resumen |
 | `process_batch_json(input_json)` | Procesa múltiples operaciones en lote |
 
 #### Funciones de Archivo JSON
@@ -301,8 +301,8 @@ result_json = classify_terms_from_file(
 | Función | Descripción |
 |---------|-------------|
 | `calculate_similarity_from_file(input_file, output_file)` | Procesa archivo de similitud |
-| `classify_terms_from_file(input_file, output_file)` | Procesa archivo de clasificación |
-| `classify_terms_with_report_from_file(input_file, output_file)` | Procesa con reporte |
+| `classify_name_from_file(input_file, output_file)` | Procesa archivo de clasificación |
+| `classify_name_with_report_from_file(input_file, output_file)` | Procesa con reporte |
 | `process_batch_from_file(input_file, output_file)` | Procesa lote desde archivo |
 
 ### Algoritmos y Umbrales
@@ -442,7 +442,7 @@ Este test:
 
 ```python
 input_data = {
-    "names": ["aleman", "alemana", "germano"],
+    "name": ["aleman", "alemana", "germano"],
     "voices": ["aleman", "alemana", "germano"],
     "voice_to_entity": {
         "aleman": "ALEMANIA",
@@ -456,7 +456,7 @@ input_data = {
 
 ```python
 input_data = {
-    "names": ["barcelona", "barzelona", "barcino"],
+    "name": ["barcelona", "barzelona", "barcino"],
     "voices": ["barcelona"],
     "voice_to_entity": {
         "barcelona": "BARCELONA"
@@ -468,7 +468,7 @@ input_data = {
 
 ```python
 input_data = {
-    "names": ["bergantin", "bergantín", "bergatin"],
+    "name": ["bergantin", "bergantín", "bergatin"],
     "voices": ["bergantin"],
     "frequencies": {
         "bergantin": 150,
@@ -502,7 +502,7 @@ input_data = {
 
 ```json
 {
-  "total_names": 2,
+  "total_name": 2,
   "classifications": [
     {
       "term": "aleman",
@@ -524,7 +524,7 @@ input_data = {
 ```json
 {
   "report": {
-    "total_names": 100,
+    "total_name": 100,
     "total_occurrences": 5000,
     "by_level": {
       "CONSENSUADO": {

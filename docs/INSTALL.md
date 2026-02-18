@@ -85,15 +85,15 @@ print(result_json)
 ### 2. Clasificar términos
 
 ```python
-from portada_s_index import classify_terms
+from portada_s_index import classify_name
 import json
 
-terms = ["aleman", "frances", "ingles"]
+name = ["aleman", "frances", "ingles"]
 voices = ["aleman", "alemana", "frances", "francesa", "ingles", "inglesa"]
 frequencies = {"aleman": 100, "frances": 80, "ingles": 150}
 
-classifications = classify_terms(
-    terms=terms,
+classifications = classify_name(
+    name=name,
     voices=voices,
     frequencies=frequencies,
 )
@@ -134,8 +134,8 @@ print(config_json)
 ```python
 from portada_s_index import (
     load_voices_from_file,
-    load_terms_from_csv,
-    classify_terms,
+    load_name_from_csv,
+    classify_name,
     export_classifications_to_json,
     generate_summary_report,
     export_summary_report,
@@ -143,11 +143,11 @@ from portada_s_index import (
 
 # Cargar datos
 voices, voice_to_entity = load_voices_from_file("listas/lista_banderas.txt")
-terms, frequencies = load_terms_from_csv("datos/terminos_ship_flag.csv")
+name, frequencies = load_name_from_csv("datos/terminos_ship_flag.csv")
 
 # Clasificar
-classifications = classify_terms(
-    terms=terms,
+classifications = classify_name(
+    name=name,
     voices=voices,
     frequencies=frequencies,
     voice_to_entity=voice_to_entity,
@@ -229,7 +229,7 @@ python3 examples/file_processing.py
 
 ```json
 {
-  "total_terms": 100,
+  "total_name": 100,
   "total_occurrences": 5000,
   "by_level": {
     "CONSENSUADO": {

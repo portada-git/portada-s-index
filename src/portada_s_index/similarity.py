@@ -344,8 +344,8 @@ def calculate_similarity(
     return results
 
 
-def classify_terms(
-    terms: List[str],
+def classify_name(
+    name: List[str],
     voices: List[str],
     frequencies: Optional[Dict[str, int]] = None,
     config: Optional[SimilarityConfig] = None,
@@ -355,7 +355,7 @@ def classify_terms(
     Clasifica una lista de términos según similitud con voces de referencia.
     
     Args:
-        terms: Lista de términos a clasificar
+        name: Lista de términos a clasificar
         voices: Lista de voces de referencia
         frequencies: Diccionario de frecuencias por término (opcional)
         config: Configuración de similitud (usa default si no se especifica)
@@ -368,14 +368,14 @@ def classify_terms(
         config = SimilarityConfig()
     
     if frequencies is None:
-        frequencies = {term: 1 for term in terms}
+        frequencies = {term: 1 for term in name}
     
     if voice_to_entity is None:
         voice_to_entity = {}
     
     classifications = []
     
-    for term in terms:
+    for term in name:
         frequency = frequencies.get(term, 0)
         
         # Calcular similitudes

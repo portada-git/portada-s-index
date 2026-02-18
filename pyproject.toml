@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = []
 
-keywords = ["similarity", "string-matching", "disambiguation", "historical-terms", "levenshtein", "jaro-winkler", "ngrams"]
+keywords = ["similarity", "string-matching", "disambiguation", "historical-name", "levenshtein", "jaro-winkler", "ngrams"]
 
 classifiers = [
     "Development Status :: 3 - Alpha",

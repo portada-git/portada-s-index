@@ -61,7 +61,7 @@ def load_voices_from_file(file_path: str | Path) -> Tuple[List[str], Dict[str, s
     return voices, voice_to_entity
 
 
-def load_terms_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int]]:
+def load_name_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int]]:
     """
     Carga nombres desde un archivo CSV.
     
@@ -83,7 +83,7 @@ def load_terms_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int
     if not file_path.exists():
         raise FileNotFoundError(f"No se encontró el archivo: {file_path}")
     
-    terms = []
+    name = []
     frequencies = {}
     
     with open(file_path, "r", encoding="utf-8-sig") as f:
@@ -103,10 +103,10 @@ def load_terms_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int
                 except ValueError:
                     freq = 1
                 
-                terms.append(term)
+                name.append(term)
                 frequencies[term] = freq
     
-    return terms, frequencies
+    return name, frequencies
 
 
 def export_classifications_to_json(

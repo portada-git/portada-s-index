@@ -12,7 +12,7 @@ from .similarity import (
     TermClassification,
     ClassificationLevel,
     calculate_similarity,
-    classify_terms,
+    classify_name,
     normalize_text,
 )
 
@@ -27,7 +27,7 @@ from .algorithms import (
 
 from .utils import (
     load_voices_from_file,
-    load_terms_from_csv,
+    load_name_from_csv,
     export_classifications_to_json,
     export_classifications_by_level,
     generate_summary_report,
@@ -36,11 +36,11 @@ from .utils import (
 
 from .json_interface import (
     calculate_similarity_json,
-    classify_terms_json,
-    classify_terms_with_report_json,
+    classify_name_json,
+    classify_name_with_report_json,
     calculate_similarity_from_file,
-    classify_terms_from_file,
-    classify_terms_with_report_from_file,
+    classify_name_from_file,
+    classify_name_with_report_from_file,
     process_batch_json,
     process_batch_from_file,
 )
@@ -56,7 +56,7 @@ __all__ = [
     "ClassificationLevel",
     # Funciones principales (uso interno)
     "calculate_similarity",
-    "classify_terms",
+    "classify_name",
     "normalize_text",
     # Algoritmos individuales (uso interno)
     "levenshtein_distance",
@@ -67,18 +67,18 @@ __all__ = [
     "ngram_similarity",
     # Utilidades (uso interno)
     "load_voices_from_file",
-    "load_terms_from_csv",
+    "load_name_from_csv",
     "export_classifications_to_json",
     "export_classifications_by_level",
     "generate_summary_report",
     "export_summary_report",
     # INTERFAZ JSON (uso principal)
     "calculate_similarity_json",
-    "classify_terms_json",
-    "classify_terms_with_report_json",
+    "classify_name_json",
+    "classify_name_with_report_json",
     "calculate_similarity_from_file",
-    "classify_terms_from_file",
-    "classify_terms_with_report_from_file",
+    "classify_name_from_file",
+    "classify_name_with_report_from_file",
     "process_batch_json",
     "process_batch_from_file",
 ]

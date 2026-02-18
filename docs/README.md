@@ -127,13 +127,13 @@ Toda la entrada y salida se maneja mediante JSON:
 ```python
 # Entrada
 {
-  "names": ["aleman", "frances"],
+  "name": ["aleman", "frances"],
   "voices": ["aleman", "frances"]
 }
 
 # Salida
 {
-  "total_names": 2,
+  "total_name": 2,
   "classifications": [...]
 }
 ```

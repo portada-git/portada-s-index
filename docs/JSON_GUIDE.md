@@ -93,7 +93,7 @@ Esta guía proporciona ejemplos completos de todos los formatos JSON soportados.
 
 ```json
 {
-  "names": ["aleman", "frances"],
+  "name": ["aleman", "frances"],
   "voices": ["aleman", "frances"]
 }
 ```
@@ -102,7 +102,7 @@ Esta guía proporciona ejemplos completos de todos los formatos JSON soportados.
 
 ```json
 {
-  "names": ["aleman", "frances", "ingles", "italiano", "desconocido"],
+  "name": ["aleman", "frances", "ingles", "italiano", "desconocido"],
   "voices": [
     "aleman", "alemana",
     "frances", "francesa",
@@ -139,7 +139,7 @@ Esta guía proporciona ejemplos completos de todos los formatos JSON soportados.
 
 ```json
 {
-  "total_names": 5,
+  "total_name": 5,
   "classifications": [
     {
       "term": "aleman",
@@ -218,7 +218,7 @@ Mismo formato que "Clasificar términos"
 ```json
 {
   "report": {
-    "total_names": 5,
+    "total_name": 5,
     "total_occurrences": 425,
     "by_level": {
       "CONSENSUADO": {
@@ -299,9 +299,9 @@ Mismo formato que "Clasificar términos"
       }
     },
     {
-      "type": "classify_terms",
+      "type": "classify_name",
       "data": {
-        "names": ["aleman", "frances"],
+        "name": ["aleman", "frances"],
         "voices": ["aleman", "alemana", "frances", "francesa"],
         "frequencies": {
           "aleman": 100,
@@ -312,7 +312,7 @@ Mismo formato que "Clasificar términos"
     {
       "type": "classify_with_report",
       "data": {
-        "names": ["italiano", "español"],
+        "name": ["italiano", "español"],
         "voices": ["italiano", "italiana", "español", "espanol"],
         "frequencies": {
           "italiano": 90,
@@ -359,10 +359,10 @@ Mismo formato que "Clasificar términos"
     },
     {
       "operation_index": 2,
-      "type": "classify_terms",
+      "type": "classify_name",
       "status": "success",
       "result": {
-        "total_names": 2,
+        "total_name": 2,
         "classifications": [...]
       }
     },
@@ -464,7 +464,7 @@ Mismo formato que "Clasificar términos"
 | Tipo | Descripción |
 |------|-------------|
 | `calculate_similarity` | Calcula similitud de un término |
-| `classify_terms` | Clasifica múltiples términos |
+| `classify_name` | Clasifica múltiples términos |
 | `classify_with_report` | Clasifica con reporte resumen |
 
 ---
@@ -525,9 +525,9 @@ result = json.loads(result_json)
 ### Desde archivos
 
 ```python
-from portada_s_index import classify_terms_from_file
+from portada_s_index import classify_name_from_file
 
-result_json = classify_terms_from_file(
+result_json = classify_name_from_file(
     input_file="input.json",
     output_file="output.json"
 )

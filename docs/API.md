@@ -214,11 +214,11 @@ for algo, result in results.items():
 
 ---
 
-### `classify_terms()`
+### `classify_name()`
 
 ```python
-classify_terms(
-    terms: List[str],
+classify_name(
+    name: List[str],
     voices: List[str],
     frequencies: Optional[Dict[str, int]] = None,
     config: Optional[SimilarityConfig] = None,
@@ -229,7 +229,7 @@ classify_terms(
 Clasifica lista de nombres según similitud con voces.
 
 **Parameters**:
-- `terms`: Lista de nombres a clasificar
+- `name`: Lista de nombres a clasificar
 - `voices`: Lista de voces de referencia
 - `frequencies`: Frecuencias por nombre (default: 1 para todos)
 - `config`: Configuración (usa default si None)
@@ -239,10 +239,10 @@ Clasifica lista de nombres según similitud con voces.
 
 **Ejemplo**:
 ```python
-from portada_s_index import classify_terms
+from portada_s_index import classify_name
 
-classifications = classify_terms(
-    terms=["aleman", "frances"],
+classifications = classify_name(
+    name=["aleman", "frances"],
     voices=["aleman", "alemana", "frances", "francesa"],
     frequencies={"aleman": 100, "frances": 80},
 )
@@ -337,7 +337,7 @@ voices, voice_to_entity = load_voices_from_file("listas/banderas.txt")
 
 ---
 
-### `load_terms_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int]]`
+### `load_name_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int]]`
 
 Carga nombres desde CSV.
 
