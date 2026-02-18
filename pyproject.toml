@@ -1,0 +1,33 @@
+[project]
+name = "portada-s-index"
+version = "0.1.0"
+description = "Biblioteca de algoritmos de similitud para desambiguación de términos históricos"
+readme = "README.md"
+authors = [
+    { name = "danro-dev", email = "drgrassnk445@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+keywords = ["similarity", "string-matching", "disambiguation", "historical-terms", "levenshtein", "jaro-winkler", "ngrams"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Text Processing",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/danro-dev/portada-s-index"
+Repository = "https://github.com/danro-dev/portada-s-index"
+
+[project.scripts]
+portada-s-index = "portada_s_index:main"
+
+[build-system]
+requires = ["uv_build>=0.9.11,<0.10.0"]
+build-backend = "uv_build"

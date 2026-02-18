@@ -1,0 +1,66 @@
+"""
+Portada S-Index: Biblioteca de algoritmos de similitud para desambiguación de términos históricos.
+"""
+
+from .similarity import (
+    SimilarityAlgorithm,
+    SimilarityConfig,
+    SimilarityResult,
+    TermClassification,
+    ClassificationLevel,
+    calculate_similarity,
+    classify_terms,
+    normalize_text,
+)
+
+from .algorithms import (
+    levenshtein_distance,
+    levenshtein_ratio,
+    levenshtein_distance_ocr,
+    levenshtein_ratio_ocr,
+    jaro_winkler_similarity,
+    ngram_similarity,
+)
+
+from .utils import (
+    load_voices_from_file,
+    load_terms_from_csv,
+    export_classifications_to_json,
+    export_classifications_by_level,
+    generate_summary_report,
+    export_summary_report,
+)
+
+__version__ = "0.1.0"
+
+__all__ = [
+    # Enums y clases principales
+    "SimilarityAlgorithm",
+    "SimilarityConfig",
+    "SimilarityResult",
+    "TermClassification",
+    "ClassificationLevel",
+    # Funciones principales
+    "calculate_similarity",
+    "classify_terms",
+    "normalize_text",
+    # Algoritmos individuales
+    "levenshtein_distance",
+    "levenshtein_ratio",
+    "levenshtein_distance_ocr",
+    "levenshtein_ratio_ocr",
+    "jaro_winkler_similarity",
+    "ngram_similarity",
+    # Utilidades
+    "load_voices_from_file",
+    "load_terms_from_csv",
+    "export_classifications_to_json",
+    "export_classifications_by_level",
+    "generate_summary_report",
+    "export_summary_report",
+]
+
+
+def main() -> None:
+    print("Portada S-Index - Biblioteca de similitud de términos")
+    print(f"Versión: {__version__}")
