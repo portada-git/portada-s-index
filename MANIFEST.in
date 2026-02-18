@@ -1,0 +1,9 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include JSON_GUIDE.md
+include API.md
+include INSTALL.md
+recursive-include src *.py
+global-exclude __pycache__
+global-exclude *.py[co]

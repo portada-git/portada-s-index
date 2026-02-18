@@ -19,15 +19,21 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
 ]
 
 [project.urls]
 Homepage = "https://github.com/danro-dev/portada-s-index"
 Repository = "https://github.com/danro-dev/portada-s-index"
+Documentation = "https://github.com/danro-dev/portada-s-index#readme"
+"Bug Tracker" = "https://github.com/danro-dev/portada-s-index/issues"
 
 [project.scripts]
 portada-s-index = "portada_s_index:main"
 
 [build-system]
-requires = ["uv_build>=0.9.11,<0.10.0"]
-build-backend = "uv_build"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
