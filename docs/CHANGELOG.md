@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.2.0] - 2026 (Próxima versión)
+
+### Añadido
+- **DOCUMENTACIÓN DE ARQUITECTURA**: Nueva documentación completa
+  - `docs/ARCHITECTURE.md`: Arquitectura detallada del paquete
+  - `docs/README.md`: Índice de toda la documentación
+  - Diagramas de flujo de datos
+  - Patrones de diseño utilizados
+  - Guía de extensibilidad
+  - Principios de diseño aplicados
+
+### Cambiado
+- **BREAKING CHANGE**: Cambio de terminología en toda la biblioteca
+  - "términos" → "nombres" en toda la documentación y ejemplos
+  - La interfaz JSON ahora acepta `"names"` en lugar de `"terms"` (mantiene retrocompatibilidad con `"terms"`)
+  - La salida JSON usa `"total_names"` en lugar de `"total_terms"`
+  - Actualización completa de README.md, JSON_GUIDE.md y API.md
+  - "voces" se mantiene sin cambios
+  - Razón: Mayor claridad semántica para el dominio de aplicación (nombres históricos)
+
+### Retrocompatibilidad
+- La entrada JSON sigue aceptando `"terms"` por compatibilidad con código existente
+- Se recomienda migrar a `"names"` en nuevas implementaciones
+
 ## [0.1.0] - 2026
 
 ### Añadido

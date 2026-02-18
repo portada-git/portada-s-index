@@ -63,7 +63,7 @@ def load_voices_from_file(file_path: str | Path) -> Tuple[List[str], Dict[str, s
 
 def load_terms_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int]]:
     """
-    Carga términos desde un archivo CSV.
+    Carga nombres desde un archivo CSV.
     
     Formato esperado (con encabezado):
         termino_normalizado,frecuencia,ejemplo_original
@@ -75,8 +75,8 @@ def load_terms_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int
     
     Returns:
         Tupla con:
-        - Lista de términos únicos
-        - Diccionario de término -> frecuencia
+        - Lista de nombres únicos
+        - Diccionario de nombre -> frecuencia
     """
     file_path = Path(file_path)
     
@@ -214,7 +214,7 @@ def generate_summary_report(
     consensuado_debil_freq = level_frequencies.get("CONSENSUADO_DEBIL", 0)
     
     report = {
-        "total_terms": len(classifications),
+        "total_names": len(classifications),
         "total_occurrences": total_occurrences,
         "by_level": {
             level: {

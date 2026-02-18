@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**Biblioteca Python para desambiguación de términos históricos mediante algoritmos de similitud de cadenas**
+**Biblioteca Python para desambiguación de nombres históricos mediante algoritmos de similitud de cadenas**
 
 [![PyPI version](https://img.shields.io/pypi/v/portada-s-index.svg)](https://pypi.org/project/portada-s-index/)
 [![Python Version](https://img.shields.io/pypi/pyversions/portada-s-index.svg)](https://pypi.org/project/portada-s-index/)
@@ -24,7 +24,7 @@
 
 ## 🎯 Descripción
 
-Portada S-Index es una biblioteca especializada en la desambiguación automática de términos históricos mediante el análisis de similitud con vocabularios controlados. Desarrollada para el proyecto PORTADA, utiliza múltiples algoritmos de similitud de cadenas y un sistema de consenso para clasificar términos con diferentes niveles de confianza.
+Portada S-Index es una biblioteca especializada en la desambiguación automática de nombres históricos mediante el análisis de similitud con vocabularios controlados. Desarrollada para el proyecto PORTADA, utiliza múltiples algoritmos de similitud de cadenas y un sistema de consenso para clasificar nombres con diferentes niveles de confianza.
 
 **Interfaz principal: JSON** - Todas las entradas y salidas se manejan exclusivamente mediante JSON para máxima interoperabilidad.
 
@@ -143,7 +143,7 @@ print(json.dumps(result, indent=2, ensure_ascii=False))
 }
 ```
 
-### Clasificar Términos
+### Clasificar Nombres
 
 ```python
 from portada_s_index import classify_terms_json
@@ -151,7 +151,7 @@ import json
 
 # Entrada JSON
 input_data = {
-    "terms": ["aleman", "frances", "ingles"],
+    "names": ["aleman", "frances", "ingles"],
     "voices": ["aleman", "alemana", "frances", "francesa", "ingles", "inglesa"],
     "frequencies": {
         "aleman": 100,
@@ -164,7 +164,7 @@ input_data = {
 result_json = classify_terms_json(input_data)
 result = json.loads(result_json)
 
-print(f"Términos clasificados: {result['total_terms']}")
+print(f"Nombres clasificados: {result['total_names']}")
 ```
 
 ### Clasificar con Reporte
@@ -175,7 +175,7 @@ import json
 
 # Entrada JSON (mismo formato que classify_terms)
 input_data = {
-    "terms": ["aleman", "frances"],
+    "names": ["aleman", "frances"],
     "voices": ["aleman", "frances"]
 }
 
@@ -207,7 +207,7 @@ input_data = {
         {
             "type": "classify_terms",
             "data": {
-                "terms": ["frances", "ingles"],
+                "names": ["frances", "ingles"],
                 "voices": ["frances", "ingles"]
             }
         }
@@ -245,7 +245,7 @@ result_json = classify_terms_from_file(
 
 ```json
 {
-  "terms": ["aleman", "frances"],
+  "names": ["aleman", "frances"],
   "voices": ["aleman", "frances"]
 }
 ```
@@ -254,7 +254,7 @@ result_json = classify_terms_from_file(
 
 ```json
 {
-  "terms": ["aleman", "frances"],
+  "names": ["aleman", "frances"],
   "voices": ["aleman", "alemana", "frances", "francesa"],
   "frequencies": {
     "aleman": 100,
@@ -317,10 +317,11 @@ result_json = classify_terms_from_file(
 
 ## 📚 Documentación Completa
 
-- **[JSON_GUIDE.md](JSON_GUIDE.md)**: Guía completa de formatos JSON con ejemplos
-- **[API.md](API.md)**: Referencia detallada de la API
-- **[INSTALL.md](INSTALL.md)**: Guía de instalación y configuración
-- **[CHANGELOG.md](CHANGELOG.md)**: Historial de cambios
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Arquitectura del paquete y diseño interno
+- **[JSON_GUIDE.md](docs/JSON_GUIDE.md)**: Guía completa de formatos JSON con ejemplos
+- **[API.md](docs/API.md)**: Referencia detallada de la API
+- **[INSTALL.md](docs/INSTALL.md)**: Guía de instalación y configuración
+- **[CHANGELOG.md](docs/CHANGELOG.md)**: Historial de cambios
 
 ## 💡 Ejemplos
 
@@ -441,7 +442,7 @@ Este test:
 
 ```python
 input_data = {
-    "terms": ["aleman", "alemana", "germano"],
+    "names": ["aleman", "alemana", "germano"],
     "voices": ["aleman", "alemana", "germano"],
     "voice_to_entity": {
         "aleman": "ALEMANIA",
@@ -455,7 +456,7 @@ input_data = {
 
 ```python
 input_data = {
-    "terms": ["barcelona", "barzelona", "barcino"],
+    "names": ["barcelona", "barzelona", "barcino"],
     "voices": ["barcelona"],
     "voice_to_entity": {
         "barcelona": "BARCELONA"
@@ -467,7 +468,7 @@ input_data = {
 
 ```python
 input_data = {
-    "terms": ["bergantin", "bergantín", "bergatin"],
+    "names": ["bergantin", "bergantín", "bergatin"],
     "voices": ["bergantin"],
     "frequencies": {
         "bergantin": 150,
@@ -497,11 +498,11 @@ input_data = {
 }
 ```
 
-### Clasificación de Términos
+### Clasificación de Nombres
 
 ```json
 {
-  "total_terms": 2,
+  "total_names": 2,
   "classifications": [
     {
       "term": "aleman",
@@ -523,7 +524,7 @@ input_data = {
 ```json
 {
   "report": {
-    "total_terms": 100,
+    "total_names": 100,
     "total_occurrences": 5000,
     "by_level": {
       "CONSENSUADO": {
@@ -549,24 +550,24 @@ Pruebas realizadas con datos históricos reales del proyecto PORTADA:
 
 ### Dataset de Prueba
 - **Fuente**: Banderas de barcos históricos
-- **Términos procesados**: 100
+- **Nombres procesados**: 100
 - **Ocurrencias totales**: 110,924
 - **Voces de referencia**: 324 (134 entidades)
 
 ### Resultados de Clasificación
 
-| Nivel | Términos | Ocurrencias | Cobertura |
-|-------|----------|-------------|-----------|
+| Nivel | Nombres | Ocurrencias | Cobertura |
+|-------|---------|-------------|-----------|
 | **CONSENSUADO** | 92 | 110,567 | **99.68%** |
 | SOLO_1_VOTO | 7 | 322 | 0.29% |
 | RECHAZADO | 1 | 35 | 0.03% |
 
 ### Ejemplos de Clasificación Exitosa
 
-**Términos con alta frecuencia correctamente identificados:**
+**Nombres con alta frecuencia correctamente identificados:**
 
-| Término Original | Frecuencia | Entidad Identificada | Confianza |
-|------------------|------------|---------------------|-----------|
+| Nombre Original | Frecuencia | Entidad Identificada | Confianza |
+|-----------------|------------|---------------------|-----------|
 | ingles | 28,247 | INGLATERRA | CONSENSUADO |
 | nacional | 14,921 | NACIONAL_AR | CONSENSUADO |
 | frances | 6,933 | FRANCIA | CONSENSUADO |
@@ -590,13 +591,13 @@ Pruebas realizadas con datos históricos reales del proyecto PORTADA:
 ### Análisis de Rendimiento
 
 - **Precisión**: 99.68% de las ocurrencias clasificadas con alta confianza
-- **Cobertura**: 92% de términos únicos consensuados
-- **Algoritmos**: 91 términos con 3 votos de aprobación
-- **Tiempo de procesamiento**: < 1 segundo para 100 términos
+- **Cobertura**: 92% de nombres únicos consensuados
+- **Algoritmos**: 91 nombres con 3 votos de aprobación
+- **Tiempo de procesamiento**: < 1 segundo para 100 nombres
 
 ### Conclusiones
 
-✅ Los algoritmos demuestran **alta precisión** en la identificación de términos históricos  
+✅ Los algoritmos demuestran **alta precisión** en la identificación de nombres históricos  
 ✅ El sistema de consenso funciona efectivamente para **reducir falsos positivos**  
 ✅ La normalización de texto maneja correctamente **variaciones ortográficas**  
 ✅ El mapeo a entidades permite **agrupación semántica** efectiva

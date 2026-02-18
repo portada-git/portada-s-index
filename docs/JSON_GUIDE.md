@@ -87,13 +87,13 @@ Esta guía proporciona ejemplos completos de todos los formatos JSON soportados.
 
 ---
 
-## 2. Clasificar términos
+## 2. Clasificar nombres
 
 ### Entrada mínima
 
 ```json
 {
-  "terms": ["aleman", "frances"],
+  "names": ["aleman", "frances"],
   "voices": ["aleman", "frances"]
 }
 ```
@@ -102,7 +102,7 @@ Esta guía proporciona ejemplos completos de todos los formatos JSON soportados.
 
 ```json
 {
-  "terms": ["aleman", "frances", "ingles", "italiano", "desconocido"],
+  "names": ["aleman", "frances", "ingles", "italiano", "desconocido"],
   "voices": [
     "aleman", "alemana",
     "frances", "francesa",
@@ -139,7 +139,7 @@ Esta guía proporciona ejemplos completos de todos los formatos JSON soportados.
 
 ```json
 {
-  "total_terms": 5,
+  "total_names": 5,
   "classifications": [
     {
       "term": "aleman",
@@ -218,7 +218,7 @@ Mismo formato que "Clasificar términos"
 ```json
 {
   "report": {
-    "total_terms": 5,
+    "total_names": 5,
     "total_occurrences": 425,
     "by_level": {
       "CONSENSUADO": {
@@ -301,7 +301,7 @@ Mismo formato que "Clasificar términos"
     {
       "type": "classify_terms",
       "data": {
-        "terms": ["aleman", "frances"],
+        "names": ["aleman", "frances"],
         "voices": ["aleman", "alemana", "frances", "francesa"],
         "frequencies": {
           "aleman": 100,
@@ -312,7 +312,7 @@ Mismo formato que "Clasificar términos"
     {
       "type": "classify_with_report",
       "data": {
-        "terms": ["italiano", "español"],
+        "names": ["italiano", "español"],
         "voices": ["italiano", "italiana", "español", "espanol"],
         "frequencies": {
           "italiano": 90,
@@ -362,7 +362,7 @@ Mismo formato que "Clasificar términos"
       "type": "classify_terms",
       "status": "success",
       "result": {
-        "total_terms": 2,
+        "total_names": 2,
         "classifications": [...]
       }
     },

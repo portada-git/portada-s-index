@@ -31,7 +31,7 @@ class SimilarityAlgorithm(str, Enum):
 
 
 class ClassificationLevel(str, Enum):
-    """Niveles de clasificación de términos."""
+    """Niveles de clasificación de nombres."""
     CONSENSUADO = "CONSENSUADO"
     CONSENSUADO_DEBIL = "CONSENSUADO_DEBIL"
     SOLO_1_VOTO = "SOLO_1_VOTO"
@@ -226,10 +226,10 @@ class SimilarityResult:
 @dataclass
 class TermClassification:
     """
-    Clasificación completa de un término.
+    Clasificación completa de un nombre.
     
     Attributes:
-        term: Término original
+        term: Nombre original
         frequency: Frecuencia de aparición
         results: Resultados por algoritmo
         votes_approval: Número de votos de aprobación
@@ -288,10 +288,10 @@ def calculate_similarity(
     voice_to_entity: Optional[Dict[str, str]] = None,
 ) -> Dict[SimilarityAlgorithm, SimilarityResult]:
     """
-    Calcula la similitud de un término con una lista de voces usando múltiples algoritmos.
+    Calcula la similitud de un nombre con una lista de voces usando múltiples algoritmos.
     
     Args:
-        term: Término a comparar
+        term: Nombre a comparar
         voices: Lista de voces de referencia
         config: Configuración de similitud (usa default si no se especifica)
         voice_to_entity: Mapeo de voz normalizada a entidad (opcional)

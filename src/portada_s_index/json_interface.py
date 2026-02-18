@@ -80,11 +80,11 @@ def calculate_similarity_json(input_json: str | Dict[str, Any]) -> str:
 
 def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
     """
-    Clasifica términos desde entrada JSON.
+    Clasifica nombres desde entrada JSON.
     
     Formato de entrada:
     {
-        "terms": ["aleman", "frances", "ingles"],
+        "names": ["aleman", "frances", "ingles"],
         "voices": ["aleman", "alemana", "frances", "francesa"],
         "frequencies": {  // opcional
             "aleman": 100,
@@ -113,8 +113,11 @@ def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
     else:
         data = input_json
     
-    # Extraer parámetros
-    terms = data["terms"]
+    # Extraer parámetros (soportar tanto "names" como "terms" por compatibilidad)
+    terms = data.get("names") or data.get("terms")
+    if not terms:
+        raise ValueError("Se requiere 'names' en la entrada JSON")
+    
     voices = data["voices"]
     frequencies = data.get("frequencies", None)
     
@@ -137,7 +140,7 @@ def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
     
     # Convertir a formato JSON
     output = {
-        "total_terms": len(classifications),
+        "total_names": len(classifications),
         "classifications": [c.to_dict() for c in classifications]
     }
     
@@ -146,7 +149,7 @@ def classify_terms_json(input_json: str | Dict[str, Any]) -> str:
 
 def classify_terms_with_report_json(input_json: str | Dict[str, Any]) -> str:
     """
-    Clasifica términos y genera reporte desde entrada JSON.
+    Clasifica nombres y genera reporte desde entrada JSON.
     
     Formato de entrada: igual que classify_terms_json
     
@@ -162,8 +165,11 @@ def classify_terms_with_report_json(input_json: str | Dict[str, Any]) -> str:
     else:
         data = input_json
     
-    # Extraer parámetros
-    terms = data["terms"]
+    # Extraer parámetros (soportar tanto "names" como "terms" por compatibilidad)
+    terms = data.get("names") or data.get("terms")
+    if not terms:
+        raise ValueError("Se requiere 'names' en la entrada JSON")
+    
     voices = data["voices"]
     frequencies = data.get("frequencies", None)
     

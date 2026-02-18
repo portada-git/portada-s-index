@@ -29,7 +29,7 @@ print(algo.value)  # "levenshtein_ocr"
 
 ### `ClassificationLevel`
 
-Niveles de clasificación de términos.
+Niveles de clasificación de nombres.
 
 **Valores**:
 - `CONSENSUADO`: Alta confianza (2+ votos misma entidad + Levenshtein OCR)
@@ -110,7 +110,7 @@ Crea configuración desde JSON.
 Resultado de comparación de similitud.
 
 **Atributos**:
-- `term` (str): Término original
+- `term` (str): Nombre original
 - `voice` (str): Voz comparada
 - `algorithm` (SimilarityAlgorithm): Algoritmo usado
 - `similarity` (float): Valor de similitud (0.0 a 1.0)
@@ -129,10 +129,10 @@ Convierte el resultado a JSON.
 
 ### `TermClassification`
 
-Clasificación completa de un término.
+Clasificación completa de un nombre.
 
 **Atributos**:
-- `term` (str): Término original
+- `term` (str): Nombre original
 - `frequency` (int): Frecuencia de aparición
 - `results` (Dict[SimilarityAlgorithm, SimilarityResult]): Resultados por algoritmo
 - `votes_approval` (int): Número de votos de aprobación
@@ -189,10 +189,10 @@ calculate_similarity(
 ) -> Dict[SimilarityAlgorithm, SimilarityResult]
 ```
 
-Calcula similitud de un término con lista de voces.
+Calcula similitud de un nombre con lista de voces.
 
 **Parameters**:
-- `term`: Término a comparar
+- `term`: Nombre a comparar
 - `voices`: Lista de voces de referencia
 - `config`: Configuración (usa default si None)
 - `voice_to_entity`: Mapeo voz normalizada -> entidad (opcional)
@@ -226,12 +226,12 @@ classify_terms(
 ) -> List[TermClassification]
 ```
 
-Clasifica lista de términos según similitud con voces.
+Clasifica lista de nombres según similitud con voces.
 
 **Parameters**:
-- `terms`: Lista de términos a clasificar
+- `terms`: Lista de nombres a clasificar
 - `voices`: Lista de voces de referencia
-- `frequencies`: Frecuencias por término (default: 1 para todos)
+- `frequencies`: Frecuencias por nombre (default: 1 para todos)
 - `config`: Configuración (usa default si None)
 - `voice_to_entity`: Mapeo voz normalizada -> entidad (opcional)
 
@@ -339,7 +339,7 @@ voices, voice_to_entity = load_voices_from_file("listas/banderas.txt")
 
 ### `load_terms_from_csv(file_path: str | Path) -> Tuple[List[str], Dict[str, int]]`
 
-Carga términos desde CSV.
+Carga nombres desde CSV.
 
 **Formato esperado**:
 ```csv
@@ -347,7 +347,7 @@ termino_normalizado,frecuencia,ejemplo_original
 termino1,100,Termino1
 ```
 
-**Returns**: Tupla con (lista de términos, mapeo término -> frecuencia)
+**Returns**: Tupla con (lista de nombres, mapeo nombre -> frecuencia)
 
 ---
 
