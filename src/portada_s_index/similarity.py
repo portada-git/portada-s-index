@@ -9,12 +9,7 @@ from enum import Enum
 from typing import List, Dict, Callable, Optional, Any
 import json
 
-from .algorithms import (
-    levenshtein_ratio,
-    levenshtein_ratio_ocr,
-    jaro_winkler_similarity,
-    ngram_similarity,
-)
+from .strategy import AlgorithmBuilder
 
 
 # =============================================================================
@@ -43,13 +38,7 @@ class ClassificationLevel(str, Enum):
 # MAPEO DE ALGORITMOS
 # =============================================================================
 
-ALGORITHM_FUNCTIONS: Dict[SimilarityAlgorithm, Callable[[str, str], float]] = {
-    SimilarityAlgorithm.LEVENSHTEIN_OCR: levenshtein_ratio_ocr,
-    SimilarityAlgorithm.LEVENSHTEIN_RATIO: levenshtein_ratio,
-    SimilarityAlgorithm.JARO_WINKLER: jaro_winkler_similarity,
-    SimilarityAlgorithm.NGRAM_2: lambda a, b: ngram_similarity(a, b, n=2),
-    SimilarityAlgorithm.NGRAM_3: lambda a, b: ngram_similarity(a, b, n=3),
-}
+# Manejado internamente por el patrón Strategy mediante AlgorithmBuilder en strategy.py
 
 DEFAULT_THRESHOLDS: Dict[SimilarityAlgorithm, float] = {
     SimilarityAlgorithm.LEVENSHTEIN_OCR: 0.75,
@@ -313,10 +302,19 @@ def calculate_similarity(
     for algo in config.algorithms:
         # Calcular similitud con cada voz
         similarities = []
-        for voice in voices:
+        strategy = AlgorithmBuilder.build(algo.value)
+        
+        d1 = {"id": "1", "citation": term_normalized}
+        d1_prepared = strategy.prepare_data(d1)
+        
+        for i, voice in enumerate(voices):
             voice_normalized = normalize_text(voice) if config.normalize else voice
-            func = ALGORITHM_FUNCTIONS[algo]
-            sim = func(term_normalized, voice_normalized)
+            
+            d2 = {"id": str(i), "voice": voice_normalized}
+            d2_prepared = strategy.prepare_data(d2)
+            
+            res = strategy.calculate(d1_prepared, d2_prepared)
+            sim = res[0][2] if res else 0.0
             similarities.append((sim, voice))
         
         # Obtener la mejor coincidencia
