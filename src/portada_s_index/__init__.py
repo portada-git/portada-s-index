@@ -16,6 +16,13 @@ from .similarity import (
     normalize_text,
 )
 
+from .core import (
+    PortAdaSIndex,
+    SimilarityMatrix,
+    EntityCitation,
+    KnownEntity,
+)
+
 from .algorithms import (
     levenshtein_distance,
     levenshtein_ratio,
@@ -23,6 +30,15 @@ from .algorithms import (
     levenshtein_ratio_ocr,
     jaro_winkler_similarity,
     ngram_similarity,
+)
+
+from .strategy import (
+    SimilarityAlgorithmStrategy,
+    LevenshteinRatioStrategy,
+    LevenshteinOcrStrategy,
+    JaroWinklerStrategy,
+    NgramStrategy,
+    AlgorithmBuilder,
 )
 
 from .utils import (
@@ -49,11 +65,22 @@ __version__ = "0.1.0"
 
 __all__ = [
     # Enums y clases principales
+    "PortAdaSIndex",
+    "SimilarityMatrix",
+    "EntityCitation",
+    "KnownEntity",
     "SimilarityAlgorithm",
     "SimilarityConfig",
     "SimilarityResult",
     "TermClassification",
     "ClassificationLevel",
+    # Strategy Pattern & Builders
+    "SimilarityAlgorithmStrategy",
+    "LevenshteinRatioStrategy",
+    "LevenshteinOcrStrategy",
+    "JaroWinklerStrategy",
+    "NgramStrategy",
+    "AlgorithmBuilder",
     # Funciones principales (uso interno)
     "calculate_similarity",
     "classify_name",

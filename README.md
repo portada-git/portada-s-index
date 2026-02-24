@@ -237,6 +237,39 @@ result_json = classify_name_from_file(
 )
 ```
 
+### Orientado a Objetos (Nueva API)
+
+Para implementaciones más estructuradas, puedes usar las clases principales de la librería. Esto facilita la separación de responsabilidades:
+
+```python
+from portada_s_index.core import PortAdaSIndex, EntityCitation, KnownEntity
+from portada_s_index.similarity import SimilarityConfig
+
+# 1. Configurar
+config = SimilarityConfig(algorithms=["levenshtein_ratio", "jaro_winkler"])
+index = PortAdaSIndex(config)
+index.set_entity_type("Países")
+
+# 2. Cargar Entidades
+index.load_known_entities([
+    KnownEntity(name="ALEMANIA", voices=["aleman", "alemana", "germano"]),
+    KnownEntity(name="FRANCIA", voices=["frances", "francesa"]),
+])
+
+# 3. Cargar Citaciones
+index.load_citations([
+    EntityCitation(id="doc1", cited_name="alemán"),
+    EntityCitation(id="doc2", cited_name="frances")
+])
+
+# 4. Generar Matriz y Reporte
+matrix = index.generate_similarity_matrix()
+report = index.get_statistical_report()
+
+print(f"Tipo: {report['entity_type']}")
+print(f"Total citaciones analizadas: {report['total_citations']}")
+```
+
 ## 📖 Documentación
 
 ### Estructura de Entrada JSON
