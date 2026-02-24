@@ -16,6 +16,13 @@ from .similarity import (
     normalize_text,
 )
 
+from .core import (
+    PortAdaSIndex,
+    SimilarityMatrix,
+    EntityCitation,
+    KnownEntity,
+)
+
 from .algorithms import (
     levenshtein_distance,
     levenshtein_ratio,
@@ -49,6 +56,10 @@ __version__ = "0.1.0"
 
 __all__ = [
     # Enums y clases principales
+    "PortAdaSIndex",
+    "SimilarityMatrix",
+    "EntityCitation",
+    "KnownEntity",
     "SimilarityAlgorithm",
     "SimilarityConfig",
     "SimilarityResult",
