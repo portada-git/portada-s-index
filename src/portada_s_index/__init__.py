@@ -32,6 +32,15 @@ from .algorithms import (
     ngram_similarity,
 )
 
+from .strategy import (
+    SimilarityAlgorithmStrategy,
+    LevenshteinRatioStrategy,
+    LevenshteinOcrStrategy,
+    JaroWinklerStrategy,
+    NgramStrategy,
+    AlgorithmBuilder,
+)
+
 from .utils import (
     load_voices_from_file,
     load_name_from_csv,
@@ -65,6 +74,13 @@ __all__ = [
     "SimilarityResult",
     "TermClassification",
     "ClassificationLevel",
+    # Strategy Pattern & Builders
+    "SimilarityAlgorithmStrategy",
+    "LevenshteinRatioStrategy",
+    "LevenshteinOcrStrategy",
+    "JaroWinklerStrategy",
+    "NgramStrategy",
+    "AlgorithmBuilder",
     # Funciones principales (uso interno)
     "calculate_similarity",
     "classify_name",
