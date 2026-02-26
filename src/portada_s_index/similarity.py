@@ -277,6 +277,7 @@ def calculate_similarity(
     voices: List[str],
     config: Optional[SimilarityConfig] = None,
     voice_to_entity: Optional[Dict[str, str]] = None,
+    prepared_voices: Optional[Dict[SimilarityAlgorithm, List[Dict[str, Any]]]] = None,
 ) -> Dict[SimilarityAlgorithm, SimilarityResult]:
     """
     Calcula la similitud de un nombre con una lista de voces usando múltiples algoritmos.
@@ -286,6 +287,7 @@ def calculate_similarity(
         voices: Lista de voces de referencia
         config: Configuración de similitud (usa default si no se especifica)
         voice_to_entity: Mapeo de voz normalizada a entidad (opcional)
+        prepared_voices: Diccionario opcional de voces ya preparadas (pre-calculadas) por algoritmo.
     
     Returns:
         Diccionario con resultados por algoritmo
@@ -309,15 +311,28 @@ def calculate_similarity(
         d1 = {"id": "1", "citation": term_normalized}
         d1_prepared = strategy.prepare_data(d1)
         
-        for i, voice in enumerate(voices):
-            voice_normalized = normalize_text(voice) if config.normalize else voice
-            
-            d2 = {"id": str(i), "voice": voice_normalized}
-            d2_prepared = strategy.prepare_data(d2)
+        # Determinar si usamos voces pre-calculadas para este algoritmo
+        if prepared_voices and algo in prepared_voices:
+            voices_to_compare = prepared_voices[algo]
+            is_prepared = True
+        else:
+            voices_to_compare = voices
+            is_prepared = False
+
+        for i, voice in enumerate(voices_to_compare):
+            if is_prepared:
+                # 'voice' ya es un dict preparado (e.g. con n-grams o vectores)
+                d2_prepared = voice
+                real_voice_name = voice.get("voice", "")
+            else:
+                voice_normalized = normalize_text(voice) if config.normalize else voice
+                d2 = {"id": str(i), "voice": voice_normalized}
+                d2_prepared = strategy.prepare_data(d2)
+                real_voice_name = voice
             
             res = strategy.calculate(d1_prepared, d2_prepared)
             sim = res[0][2] if res else 0.0
-            similarities.append((sim, voice))
+            similarities.append((sim, real_voice_name))
         
         # Obtener la mejor coincidencia
         if similarities:
@@ -350,6 +365,7 @@ def classify_name(
     frequencies: Optional[Dict[str, int]] = None,
     config: Optional[SimilarityConfig] = None,
     voice_to_entity: Optional[Dict[str, str]] = None,
+    prepared_voices: Optional[Dict[SimilarityAlgorithm, List[Dict[str, Any]]]] = None,
 ) -> List[TermClassification]:
     """
     Clasifica una lista de términos según similitud con voces de referencia.
@@ -360,6 +376,7 @@ def classify_name(
         frequencies: Diccionario de frecuencias por término (opcional)
         config: Configuración de similitud (usa default si no se especifica)
         voice_to_entity: Mapeo de voz normalizada a entidad (opcional)
+        prepared_voices: Voces ya preparadas (opcional)
     
     Returns:
         Lista de clasificaciones de términos
@@ -379,7 +396,7 @@ def classify_name(
         frequency = frequencies.get(term, 0)
         
         # Calcular similitudes
-        results = calculate_similarity(term, voices, config, voice_to_entity)
+        results = calculate_similarity(term, voices, config, voice_to_entity, prepared_voices)
         
         # Contar votos de aprobación
         votes_approval = sum(1 for result in results.values() if result.approved)
