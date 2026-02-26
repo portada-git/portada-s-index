@@ -144,8 +144,25 @@ class PortAdaSIndex:
         }
         return report
 
-    def get_result_matrix(self) -> Any:
+    def get_result_matrix(self) -> List[Dict[str, Any]]:
         """
-        Returns the result matrix.
+        Returns a result matrix where each entry contains the term, 
+        the target voice, and the scores for all applied algorithms.
         """
-        pass
+        if not self._similarity_matrix:
+            raise ValueError("You must generate the similarity matrix first.")
+            
+        results = []
+        for classification in self._similarity_matrix.get_raw_data():
+            item = {
+                "term": classification.term,
+                "best_voice": classification.voice_consensus,
+                "entity": classification.entity_consensus,
+                "classification": classification.classification.value,
+                "scores": {
+                    algo_name: res["similarity"]
+                    for algo_name, res in classification.to_dict()["results"].items()
+                }
+            }
+            results.append(item)
+        return results

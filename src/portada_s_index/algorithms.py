@@ -2,7 +2,8 @@
 Algoritmos de similitud de cadenas para desambiguación de términos.
 """
 
-from typing import Set, Tuple
+import math
+from typing import Set, Tuple, List
 
 
 # =============================================================================
@@ -267,3 +268,27 @@ def ngram_similarity(a: str, b: str, n: int = 2) -> float:
     union = len(ngrams_a | ngrams_b)
     
     return intersection / union if union > 0 else 0.0
+
+
+def cosine_similarity(v1: List[float], v2: List[float]) -> float:
+    """
+    Calcula la similitud de coseno entre dos vectores.
+    
+    Args:
+        v1: Primer vector
+        v2: Segundo vector
+    
+    Returns:
+        Similitud de coseno (0.0 a 1.0)
+    """
+    if not v1 or not v2 or len(v1) != len(v2):
+        return 0.0
+    
+    dot_product = sum(x * y for x, y in zip(v1, v2))
+    norm_v1 = math.sqrt(sum(x * x for x in v1))
+    norm_v2 = math.sqrt(sum(x * x for x in v2))
+    
+    if norm_v1 == 0 or norm_v2 == 0:
+        return 0.0
+    
+    return dot_product / (norm_v1 * norm_v2)

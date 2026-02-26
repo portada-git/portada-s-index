@@ -23,6 +23,7 @@ class SimilarityAlgorithm(str, Enum):
     JARO_WINKLER = "jaro_winkler"
     NGRAM_2 = "ngram_2"
     NGRAM_3 = "ngram_3"
+    TEXT2VEC = "text2vec"
 
 
 class ClassificationLevel(str, Enum):
@@ -44,8 +45,9 @@ DEFAULT_THRESHOLDS: Dict[SimilarityAlgorithm, float] = {
     SimilarityAlgorithm.LEVENSHTEIN_OCR: 0.75,
     SimilarityAlgorithm.LEVENSHTEIN_RATIO: 0.75,
     SimilarityAlgorithm.JARO_WINKLER: 0.85,
-    SimilarityAlgorithm.NGRAM_2: 0.66,
-    SimilarityAlgorithm.NGRAM_3: 0.60,
+    SimilarityAlgorithm.NGRAM_2: 0.63,
+    SimilarityAlgorithm.NGRAM_3: 0.55,
+    SimilarityAlgorithm.TEXT2VEC: 0.85,
 }
 
 DEFAULT_GRAY_ZONES: Dict[SimilarityAlgorithm, tuple[float, float]] = {

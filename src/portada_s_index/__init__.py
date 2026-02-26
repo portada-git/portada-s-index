@@ -23,6 +23,11 @@ from .core import (
     KnownEntity,
 )
 
+from .embeddings import (
+    BaseEmbedding,
+    CharHashingEmbedding,
+)
+
 from .algorithms import (
     levenshtein_distance,
     levenshtein_ratio,
@@ -30,6 +35,7 @@ from .algorithms import (
     levenshtein_ratio_ocr,
     jaro_winkler_similarity,
     ngram_similarity,
+    cosine_similarity,
 )
 
 from .strategy import (
@@ -38,6 +44,7 @@ from .strategy import (
     LevenshteinOcrStrategy,
     JaroWinklerStrategy,
     NgramStrategy,
+    Text2VecStrategy,
     AlgorithmBuilder,
 )
 
@@ -69,6 +76,8 @@ __all__ = [
     "SimilarityMatrix",
     "EntityCitation",
     "KnownEntity",
+    "BaseEmbedding",
+    "CharHashingEmbedding",
     "SimilarityAlgorithm",
     "SimilarityConfig",
     "SimilarityResult",
@@ -80,6 +89,7 @@ __all__ = [
     "LevenshteinOcrStrategy",
     "JaroWinklerStrategy",
     "NgramStrategy",
+    "Text2VecStrategy",
     "AlgorithmBuilder",
     # Funciones principales (uso interno)
     "calculate_similarity",
@@ -92,6 +102,7 @@ __all__ = [
     "levenshtein_ratio_ocr",
     "jaro_winkler_similarity",
     "ngram_similarity",
+    "cosine_similarity",
     # Utilidades (uso interno)
     "load_voices_from_file",
     "load_name_from_csv",

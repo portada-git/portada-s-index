@@ -9,7 +9,9 @@ from .algorithms import (
     levenshtein_ratio_ocr,
     jaro_winkler_similarity,
     ngram_similarity,
+    cosine_similarity,
 )
+from .embeddings import CharHashingEmbedding
 
 class SimilarityAlgorithmStrategy(ABC):
     """
@@ -119,6 +121,48 @@ class NgramStrategy(SimilarityAlgorithmStrategy):
         return [(id1, id2, score)]
 
 
+
+class Text2VecStrategy(SimilarityAlgorithmStrategy):
+    """
+    Algorithm based on text embeddings.
+    Adds a vector field to the data using a real Character Hashing implementation.
+    """
+    def __init__(self, dimensions: int = 128, n_gram: int = 3):
+        self.embedding_model = CharHashingEmbedding(dimensions=dimensions, n_gram=n_gram)
+
+    @property
+    def name(self) -> str:
+        return "text2vec"
+
+    def prepare_data(self, d: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Adds the embedding vector to the dictionary using a real calculation.
+        """
+        text = d.get("citation") or d.get("voice") or ""
+        vector_field = f"{self.name}_vector"
+        
+        # Only compute if not already present
+        if vector_field not in d:
+            d = d.copy()
+            d[vector_field] = self.embedding_model.get_vector(text)
+        
+        return d
+
+    def calculate(self, d_prepared_1: Dict[str, Any], d_prepared_2: Dict[str, Any]) -> List[Tuple[Any, Any, float]]:
+        id1 = d_prepared_1.get("id")
+        id2 = d_prepared_2.get("id")
+        
+        vector_field = f"{self.name}_vector"
+        v1 = d_prepared_1.get(vector_field)
+        v2 = d_prepared_2.get(vector_field)
+        
+        if v1 is None or v2 is None:
+            # Fallback if vectors are missing (should not happen with prepare_data)
+            return [(id1, id2, 0.0)]
+        
+        score = cosine_similarity(v1, v2)
+        return [(id1, id2, score)]
+
 class AlgorithmBuilder:
     """
     Builder pattern implementation for constructing algorithm strategies.
@@ -130,6 +174,7 @@ class AlgorithmBuilder:
         "jaro_winkler": JaroWinklerStrategy,
         "ngram_2": lambda **kwargs: NgramStrategy(n=2, **kwargs),
         "ngram_3": lambda **kwargs: NgramStrategy(n=3, **kwargs),
+        "text2vec": Text2VecStrategy,
     }
 
     @classmethod
