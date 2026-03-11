@@ -41,13 +41,13 @@ Portada S-Index es una biblioteca especializada en la desambiguación automátic
 
 Clasificación automática en 5 niveles de confianza:
 
-| Nivel | Descripción | Criterio |
-|-------|-------------|----------|
-| **CONSENSUADO** | Alta confianza | 2+ algoritmos votan por la misma entidad + Levenshtein OCR incluido |
-| **CONSENSUADO_DEBIL** | Confianza moderada | 2+ algoritmos aprueban sin criterio estricto |
-| **SOLO_1_VOTO** | Baja confianza | Solo 1 algoritmo supera el umbral |
-| **ZONA_GRIS** | Ambiguo | Al menos 1 algoritmo en zona gris |
-| **RECHAZADO** | Sin correspondencia | Ningún algoritmo supera umbrales |
+| Nivel                 | Descripción         | Criterio                                                            |
+| --------------------- | ------------------- | ------------------------------------------------------------------- |
+| **CONSENSUADO**       | Alta confianza      | 2+ algoritmos votan por la misma entidad + Levenshtein OCR incluido |
+| **CONSENSUADO_DEBIL** | Confianza moderada  | 2+ algoritmos aprueban sin criterio estricto                        |
+| **SOLO_1_VOTO**       | Baja confianza      | Solo 1 algoritmo supera el umbral                                   |
+| **ZONA_GRIS**         | Ambiguo             | Al menos 1 algoritmo en zona gris                                   |
+| **RECHAZADO**         | Sin correspondencia | Ningún algoritmo supera umbrales                                    |
 
 ### 🎛️ Configuración Flexible
 
@@ -120,6 +120,7 @@ print(json.dumps(result, indent=2, ensure_ascii=False))
 ```
 
 **Salida:**
+
 ```json
 {
   "term": "alemán",
@@ -308,7 +309,7 @@ print(f"Total citaciones analizadas: {report['total_citations']}")
     },
     "gray_zones": {
       "levenshtein_ocr": [0.71, 0.749],
-      "jaro_winkler": [0.80, 0.849],
+      "jaro_winkler": [0.8, 0.849],
       "ngram_2": [0.63, 0.659]
     },
     "normalize": true,
@@ -322,31 +323,31 @@ print(f"Total citaciones analizadas: {report['total_citations']}")
 
 #### Funciones de Entrada JSON
 
-| Función | Descripción |
-|---------|-------------|
-| `calculate_similarity_json(input_json)` | Calcula similitud de un término con voces |
-| `classify_name_json(input_json)` | Clasifica múltiples términos |
+| Función                                      | Descripción                                 |
+| -------------------------------------------- | ------------------------------------------- |
+| `calculate_similarity_json(input_json)`      | Calcula similitud de un término con voces   |
+| `classify_name_json(input_json)`             | Clasifica múltiples términos                |
 | `classify_name_with_report_json(input_json)` | Clasifica términos y genera reporte resumen |
-| `process_batch_json(input_json)` | Procesa múltiples operaciones en lote |
+| `process_batch_json(input_json)`             | Procesa múltiples operaciones en lote       |
 
 #### Funciones de Archivo JSON
 
-| Función | Descripción |
-|---------|-------------|
-| `calculate_similarity_from_file(input_file, output_file)` | Procesa archivo de similitud |
-| `classify_name_from_file(input_file, output_file)` | Procesa archivo de clasificación |
-| `classify_name_with_report_from_file(input_file, output_file)` | Procesa con reporte |
-| `process_batch_from_file(input_file, output_file)` | Procesa lote desde archivo |
+| Función                                                        | Descripción                      |
+| -------------------------------------------------------------- | -------------------------------- |
+| `calculate_similarity_from_file(input_file, output_file)`      | Procesa archivo de similitud     |
+| `classify_name_from_file(input_file, output_file)`             | Procesa archivo de clasificación |
+| `classify_name_with_report_from_file(input_file, output_file)` | Procesa con reporte              |
+| `process_batch_from_file(input_file, output_file)`             | Procesa lote desde archivo       |
 
 ### Algoritmos y Umbrales
 
-| Algoritmo | Identificador | Umbral Default | Zona Gris Default |
-|-----------|---------------|----------------|-------------------|
-| Levenshtein OCR | `levenshtein_ocr` | 0.75 | [0.71, 0.749] |
-| Levenshtein Ratio | `levenshtein_ratio` | 0.75 | [0.71, 0.749] |
-| Jaro-Winkler | `jaro_winkler` | 0.85 | [0.80, 0.849] |
-| N-gramas 2 | `ngram_2` | 0.66 | [0.63, 0.659] |
-| N-gramas 3 | `ngram_3` | 0.60 | [0.55, 0.599] |
+| Algoritmo         | Identificador       | Umbral Default | Zona Gris Default |
+| ----------------- | ------------------- | -------------- | ----------------- |
+| Levenshtein OCR   | `levenshtein_ocr`   | 0.75           | [0.71, 0.749]     |
+| Levenshtein Ratio | `levenshtein_ratio` | 0.75           | [0.71, 0.749]     |
+| Jaro-Winkler      | `jaro_winkler`      | 0.85           | [0.80, 0.849]     |
+| N-gramas 2        | `ngram_2`           | 0.66           | [0.63, 0.659]     |
+| N-gramas 3        | `ngram_3`           | 0.60           | [0.55, 0.599]     |
 
 ## 📚 Documentación Completa
 
@@ -390,6 +391,7 @@ python3 test_portada_external.py
 ```
 
 **Resultado esperado:**
+
 ```
 ✓ TEST 1: Similitud simple
 ✓ TEST 2: Clasificación de términos
@@ -405,11 +407,12 @@ python3 test_portada_external.py
 ### Test con Datos Reales
 
 ```bash
-# Test con datos reales del proyecto similitudes
+# Test con datos reales del proyecto portada_s_index
 python3 test_real_data.py
 ```
 
 Este test:
+
 1. Convierte CSVs de términos históricos a JSON
 2. Carga listas de voces normalizadas
 3. Procesa 100 términos reales con los algoritmos
@@ -418,14 +421,15 @@ Este test:
 **Resultados con datos reales (100 términos, 110,924 ocurrencias):**
 
 | Clasificación | Términos | Ocurrencias | Porcentaje |
-|---------------|----------|-------------|------------|
-| CONSENSUADO | 92 | 110,567 | 99.68% |
-| SOLO_1_VOTO | 7 | 322 | 0.29% |
-| RECHAZADO | 1 | 35 | 0.03% |
+| ------------- | -------- | ----------- | ---------- |
+| CONSENSUADO   | 92       | 110,567     | 99.68%     |
+| SOLO_1_VOTO   | 7        | 322         | 0.29%      |
+| RECHAZADO     | 1        | 35          | 0.03%      |
 
 **Cobertura consensuada: 99.68%** ✨
 
 **Top entidades identificadas:**
+
 - INGLATERRA: 34,976 ocurrencias
 - NACIONAL_AR: 14,921 ocurrencias
 - FRANCIA: 9,982 ocurrencias
@@ -441,8 +445,8 @@ Este test:
   "config": {
     "algorithms": ["levenshtein_ocr", "jaro_winkler"],
     "thresholds": {
-      "levenshtein_ocr": 0.80,
-      "jaro_winkler": 0.90
+      "levenshtein_ocr": 0.8,
+      "jaro_winkler": 0.9
     }
   }
 }
@@ -582,6 +586,7 @@ input_data = {
 Pruebas realizadas con datos históricos reales del proyecto PORTADA:
 
 ### Dataset de Prueba
+
 - **Fuente**: Banderas de barcos históricos
 - **Nombres procesados**: 100
 - **Ocurrencias totales**: 110,924
@@ -589,24 +594,24 @@ Pruebas realizadas con datos históricos reales del proyecto PORTADA:
 
 ### Resultados de Clasificación
 
-| Nivel | Nombres | Ocurrencias | Cobertura |
-|-------|---------|-------------|-----------|
-| **CONSENSUADO** | 92 | 110,567 | **99.68%** |
-| SOLO_1_VOTO | 7 | 322 | 0.29% |
-| RECHAZADO | 1 | 35 | 0.03% |
+| Nivel           | Nombres | Ocurrencias | Cobertura  |
+| --------------- | ------- | ----------- | ---------- |
+| **CONSENSUADO** | 92      | 110,567     | **99.68%** |
+| SOLO_1_VOTO     | 7       | 322         | 0.29%      |
+| RECHAZADO       | 1       | 35          | 0.03%      |
 
 ### Ejemplos de Clasificación Exitosa
 
 **Nombres con alta frecuencia correctamente identificados:**
 
-| Nombre Original | Frecuencia | Entidad Identificada | Confianza |
-|-----------------|------------|---------------------|-----------|
-| ingles | 28,247 | INGLATERRA | CONSENSUADO |
-| nacional | 14,921 | NACIONAL_AR | CONSENSUADO |
-| frances | 6,933 | FRANCIA | CONSENSUADO |
-| inglesa | 6,153 | INGLATERRA | CONSENSUADO |
-| aleman | 5,154 | ALEMANIA | CONSENSUADO |
-| italiano | 4,924 | ITALIA | CONSENSUADO |
+| Nombre Original | Frecuencia | Entidad Identificada | Confianza   |
+| --------------- | ---------- | -------------------- | ----------- |
+| ingles          | 28,247     | INGLATERRA           | CONSENSUADO |
+| nacional        | 14,921     | NACIONAL_AR          | CONSENSUADO |
+| frances         | 6,933      | FRANCIA              | CONSENSUADO |
+| inglesa         | 6,153      | INGLATERRA           | CONSENSUADO |
+| aleman          | 5,154      | ALEMANIA             | CONSENSUADO |
+| italiano        | 4,924      | ITALIA               | CONSENSUADO |
 
 ### Top 10 Entidades Identificadas
 

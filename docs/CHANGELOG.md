@@ -3,6 +3,7 @@
 ## [0.2.0] - 2026 (Próxima versión)
 
 ### Añadido
+
 - **DOCUMENTACIÓN DE ARQUITECTURA**: Nueva documentación completa
   - `docs/ARCHITECTURE.md`: Arquitectura detallada del paquete
   - `docs/README.md`: Índice de toda la documentación
@@ -12,6 +13,7 @@
   - Principios de diseño aplicados
 
 ### Cambiado
+
 - **BREAKING CHANGE**: Cambio de terminología en toda la biblioteca
   - "términos" → "nombres" en toda la documentación y ejemplos
   - La interfaz JSON ahora acepta `"name"` en lugar de `"name"` (mantiene retrocompatibilidad con `"name"`)
@@ -21,12 +23,14 @@
   - Razón: Mayor claridad semántica para el dominio de aplicación (nombres históricos)
 
 ### Retrocompatibilidad
+
 - La entrada JSON sigue aceptando `"name"` por compatibilidad con código existente
 - Se recomienda migrar a `"name"` en nuevas implementaciones
 
 ## [0.1.0] - 2026
 
 ### Añadido
+
 - **INTERFAZ JSON**: Entrada y salida exclusivamente mediante JSON
   - `calculate_similarity_json()`: Calcular similitud desde JSON
   - `classify_name_json()`: Clasificar términos desde JSON
@@ -58,8 +62,8 @@
 - Ejemplos de uso:
   - json_usage.py: Ejemplos con JSON en memoria
   - json_file_processing.py: Procesamiento de archivos JSON
-  - input_*.json: Archivos de ejemplo de entrada
-  - output_*.json: Archivos de ejemplo de salida
+  - input\_\*.json: Archivos de ejemplo de entrada
+  - output\_\*.json: Archivos de ejemplo de salida
 - Documentación completa:
   - README.md: Documentación general con enfoque JSON
   - JSON_GUIDE.md: Guía completa de formatos JSON
@@ -68,6 +72,7 @@
 - Tests unitarios básicos
 
 ### Características técnicas
+
 - Sin dependencias externas (solo biblioteca estándar de Python)
 - Compatible con Python >= 3.12
 - Soporte completo para serialización JSON
@@ -79,6 +84,7 @@
 - Manejo de errores en procesamiento por lotes
 
 ### Notas
-- Versión inicial extraída del proyecto similitudes
+
+- Versión inicial extraída del proyecto portada_s_index
 - Diseñada para el proyecto PORTADA de desambiguación de términos históricos
 - Interfaz principal: JSON (entrada y salida)
