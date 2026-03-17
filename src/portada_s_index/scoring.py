@@ -229,7 +229,7 @@ def classify(
         )
 
     # Prioridad 4: ALMOST_AGREED
-    if total_votes > total_en_zona_gris:
+    if total_votes > total_en_zona_gris and total_votes >= consensus.min_votes//2:
         return TermResult(
             term=term,
             frequency=frequency,
