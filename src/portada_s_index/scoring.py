@@ -154,6 +154,8 @@ def classify(
             if s.algorithm == "levenshtein_ocr":
                 lev_ocr_vote_entity = s.best_entity
         elif s.in_gray_zone:
+            if s.best_entity not in en_zona_gris_por_entidad:
+                en_zona_gris_por_entidad[s.best_entity] = []
             en_zona_gris_por_entidad[s.best_entity].append((s.algorithm, s.best_voice, s.score))
             en_zona_gris = True
 
