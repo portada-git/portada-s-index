@@ -1791,7 +1791,7 @@ wheels = [
 
 [[package]]
 name = "portada-s-index"
-version = "0.1.22"
+version = "0.1.26"
 source = { editable = "." }
 dependencies = [
     { name = "jellyfish" },
