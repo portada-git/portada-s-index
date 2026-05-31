@@ -25,15 +25,8 @@ CONFIG = {
     "normalize": True,
     "consensus": {
         "min_votes": 2,
-        "require_levenshtein_ocr": True
     },
     "algorithms": {
-        "levenshtein_ocr": {
-            "enabled": True,
-            "threshold": 0.75,
-            "gray_zone": [0.71, 0.749],
-            "params": {"confusion_cost": 0.4}
-        },
         "jaro_winkler": {
             "enabled": True,
             "threshold": 0.85,

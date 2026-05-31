@@ -13,15 +13,23 @@ from typing import Any
 
 from portada_s_index.algorithms.base import Algorithm, AlgorithmNotAvailableError
 from portada_s_index.algorithms.lexical import (
-    LevenshteinOCR,
     LevenshteinRatio,
     JaroWinkler,
     NGram2,
     NGram3,
     NGram4,
 )
-from portada_s_index.algorithms.phonetic import PhoneticDM, Soundex
-from portada_s_index.algorithms.semantic import TokenJaccard, CharCosine, SemanticModel, FastTextModel, ByT5Model
+from portada_s_index.algorithms.phonetic import PhoneticDM
+from portada_s_index.algorithms.semantic import (
+    TokenJaccard,
+    CharCosine,
+    SemanticModel,
+    SemanticText2Vec,
+    SentenceTransformerLABSE,
+    SentenceTransformerMPNet,
+    FastTextModel,
+    ByT5Model,
+)
 from portada_s_index.config import AlgorithmConfig
 
 
@@ -32,17 +40,19 @@ from portada_s_index.config import AlgorithmConfig
 # Valor: clase que implementa Algorithm
 
 REGISTRY: dict[str, type[Algorithm]] = {
-    "levenshtein_ocr":   LevenshteinOCR,
     "levenshtein_ratio": LevenshteinRatio,
     "jaro_winkler":      JaroWinkler,
     "ngram_2":           NGram2,
     "ngram_3":           NGram3,
     "ngram_4":           NGram4,
     "phonetic_dm":       PhoneticDM,
-    "soundex":           Soundex,
     "semantica":         TokenJaccard,
     "text2vec":          CharCosine,
     "semantic_model":    SemanticModel,
+    "semantic_text2vec":  SemanticText2Vec,
+    "sentence_transformer_LABSE": SentenceTransformerLABSE,
+    "sentence_transformer_labse": SentenceTransformerLABSE,
+    "sentence_transformer_mpnet": SentenceTransformerMPNet,
     "fasttext":          FastTextModel,
     "byt5":              ByT5Model,
 }

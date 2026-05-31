@@ -108,7 +108,7 @@ class PortadaCleaningLayer:
         Un Configurator por algoritmo, no uno global.
 
         Args:
-            algorithm_type : Nombre del algoritmo (ej: "levenshtein_ocr")
+            algorithm_type : Nombre del algoritmo (ej: "jaro_winkler")
             config         : AlgorithmConfig con threshold, gray_zone y params
         """
         return Configurator(algorithm_type=algorithm_type, config=config)

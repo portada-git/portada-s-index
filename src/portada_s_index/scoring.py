@@ -6,11 +6,10 @@ una clasificación por término. No sabe cómo se calcularon los scores.
 
 Prioridad de clasificación:
   1. EXACT       — match exacto con una voz conocida
-  2. CONSENSUS   — >= min_votes por la misma entidad (+ Lev_OCR si requerido)
-  3. WEAK        — >= 2 votos pero no cumple requisitos de CONSENSUS
-  4. ONE_VOTE    — exactamente 1 voto
-  5. GRAY_ZONE   — ningún voto pero al menos 1 en zona gris
-  6. REJECTED    — sin coincidencias significativas
+  2. CONSENSUS   — mayoría absoluta de algoritmos ejecutados por la misma entidad
+  3. WEAK        — reservado para compatibilidad de clasificación
+  4. GRAY_ZONE   — sin consenso pero al menos 1 en zona gris
+  5. REJECTED    — sin coincidencias significativas
 """
 
 from __future__ import annotations
@@ -21,6 +20,11 @@ from typing import Literal
 from portada_s_index.config import ConsensusConfig
 
 
+def required_consensus_votes(executed_algorithms_count: int) -> int:
+    """Mayoría absoluta: mitad de algoritmos ejecutados + 1."""
+    return (executed_algorithms_count // 2) + 1
+
+
 # ---------------------------------------------------------------------------
 # Tipos de clasificación
 # ---------------------------------------------------------------------------
@@ -29,7 +33,6 @@ Classification = Literal[
     "EXACT",
     "CONSENSUS",
     "WEAK",
-    "SOME_VOTE",
     "GRAY_ZONE",
     "REJECTED",
 ]
@@ -144,15 +147,12 @@ def classify(
     votos_por_entidad: dict[str, list[tuple[str, str, float]]] = {}
     en_zona_gris_por_entidad: dict[str, list[tuple[str, str, float]]] = {}
     en_zona_gris = False
-    lev_ocr_vote_entity: str | None = None   # Entidad por la que votó Lev_OCR
 
     for s in scores:
         if s.voted:
             if s.best_entity not in votos_por_entidad:
                 votos_por_entidad[s.best_entity] = []
             votos_por_entidad[s.best_entity].append((s.algorithm, s.best_voice, s.score))
-            if s.algorithm == "levenshtein_ocr":
-                lev_ocr_vote_entity = s.best_entity
         elif s.in_gray_zone:
             if s.best_entity not in en_zona_gris_por_entidad:
                 en_zona_gris_por_entidad[s.best_entity] = []
@@ -180,28 +180,12 @@ def classify(
     winning_entity = max(votos_por_entidad, key=lambda e: len(votos_por_entidad[e]))
     winning_votes_list = votos_por_entidad[winning_entity]
     winning_vote_count = len(winning_votes_list)
-    total_votes = sum(len(v) for v in votos_por_entidad.values())
-    total_en_zona_gris = sum(len(v) for v in en_zona_gris_por_entidad.values()) if en_zona_gris else 0
-
-    # Determinar la voz ganadora:
-    # Preferencia: la voz que votó Lev_OCR (si está en la entidad ganadora)
-    winning_voice = ""
-    lev_ocr_in_consensus = lev_ocr_vote_entity == winning_entity
-
-    if lev_ocr_in_consensus:
-        # Tomar la voz que Lev_OCR propuso
-        for algo, voice, _ in winning_votes_list:
-            if algo == "levenshtein_ocr":
-                winning_voice = voice
-                break
-    if not winning_voice:
-        # Tomar la voz con mayor score entre los votantes de la entidad ganadora
-        best = max(winning_votes_list, key=lambda x: x[2])
-        winning_voice = best[1]
+    best = max(winning_votes_list, key=lambda x: x[2])
+    winning_voice = best[1]
+    required_votes = required_consensus_votes(len(scores))
 
     # Prioridad 2: CONSENSUS
-    lev_ocr_ok = (not consensus.require_levenshtein_ocr) or lev_ocr_in_consensus
-    if winning_vote_count >= consensus.min_votes and lev_ocr_ok:
+    if winning_vote_count >= required_votes:
         return TermResult(
             term=term,
             frequency=frequency,
@@ -214,35 +198,7 @@ def classify(
             algorithm_scores=scores,
         )
 
-    # Prioridad 3: WEAK (votos suficientes pero sin cumplir Lev_OCR)
-    if winning_vote_count >= consensus.min_votes :
-        return TermResult(
-            term=term,
-            frequency=frequency,
-            normalized=normalized,
-            exact_match=False,
-            classification="WEAK",
-            entity=winning_entity,
-            voice=winning_voice,
-            votes=winning_vote_count,
-            algorithm_scores=scores,
-        )
-
-    # Prioridad 4: ALMOST_AGREED
-    if total_votes >= total_en_zona_gris and total_votes >= 1 + consensus.min_votes//2:
-        return TermResult(
-            term=term,
-            frequency=frequency,
-            normalized=normalized,
-            exact_match=False,
-            classification="SOME_VOTE",
-            entity=winning_entity,
-            voice=winning_voice,
-            votes=winning_vote_count,
-            algorithm_scores=scores,
-        )
-
-    # Prioridad 5: GRAY_ZONE
+    # Prioridad 4: GRAY_ZONE
     if en_zona_gris:
         winning_entity = max(en_zona_gris_por_entidad, key=lambda e: len(en_zona_gris_por_entidad[e]))
         winning_voice = max(en_zona_gris_por_entidad[winning_entity], key=lambda x: x[2])[1]
@@ -258,7 +214,7 @@ def classify(
             algorithm_scores=scores,
         )
 
-    # Prioridad 6: REJECTED
+    # Prioridad 5: REJECTED
     return TermResult(
         term=term,
         frequency=frequency,

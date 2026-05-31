@@ -28,7 +28,7 @@ class ConfigValidationError(ValueError):
 
 @dataclass
 class AlgorithmConfig:
-    name: str                           # Clave exacta del JSON: "levenshtein_ocr", etc.
+    name: str                           # Clave exacta del JSON: "jaro_winkler", etc.
     enabled: bool
     threshold: float                    # Umbral de voto positivo [0, 1]
     gray_zone: tuple[float, float]      # (piso, techo) — piso < techo <= threshold
@@ -53,7 +53,6 @@ class AlgorithmConfig:
 @dataclass
 class ConsensusConfig:
     min_votes: int                      # Mínimo de votos por entidad para CONSENSUS
-    require_levenshtein_ocr: bool       # Si True, lev_ocr debe estar entre los votantes
 
     def __post_init__(self) -> None:
         if self.min_votes < 1:
@@ -93,19 +92,28 @@ class PipelineConfig:
             raw_consensus = data.get("consensus", {})
             consensus = ConsensusConfig(
                 min_votes=int(raw_consensus.get("min_votes", 2)),
-                require_levenshtein_ocr=bool(
-                    raw_consensus.get("require_levenshtein_ocr", False)
-                ),
             )
 
             algorithms: dict[str, AlgorithmConfig] = {}
             for name, raw in data.get("algorithms", {}).items():
-                gz = raw.get("gray_zone", [0.0, 0.0])
+                raw_threshold = raw.get("threshold", 0.7)
+                raw_gray_zone = raw.get("gray_zone")
+                if isinstance(raw_threshold, (list, tuple)):
+                    if len(raw_threshold) != 2:
+                        raise ConfigValidationError(
+                            f"[{name}] threshold como lista debe ser [threshold, gray_floor]"
+                        )
+                    threshold = float(raw_threshold[0])
+                    gz = (float(raw_threshold[1]), threshold)
+                else:
+                    threshold = float(raw_threshold)
+                    gz_raw = raw_gray_zone if raw_gray_zone is not None else [0.0, 0.0]
+                    gz = (float(gz_raw[0]), float(gz_raw[1]))
                 algorithms[name] = AlgorithmConfig(
                     name=name,
                     enabled=bool(raw.get("enabled", False)),
-                    threshold=float(raw.get("threshold", 0.7)),
-                    gray_zone=(float(gz[0]), float(gz[1])),
+                    threshold=threshold,
+                    gray_zone=gz,
                     params=dict(raw.get("params", {})),
                 )
 
@@ -145,7 +153,6 @@ class PipelineConfig:
             "normalize": self.normalize,
             "consensus": {
                 "min_votes": self.consensus.min_votes,
-                "require_levenshtein_ocr": self.consensus.require_levenshtein_ocr,
             },
             "algorithms": {
                 name: {

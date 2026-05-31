@@ -287,7 +287,7 @@ class SemanticModel(_EmbeddingAlgorithm):
 
         self._backend = backend
         resolved_model = model_name or self._DEFAULT_MODELS[backend]
-        cache_key = f"semantic_model_{backend}_{resolved_model}"
+        cache_key = f"{self.name}_{backend}_{resolved_model}"
 
         if backend == "text2vec":
             if not _TEXT2VEC_AVAILABLE:
@@ -321,6 +321,48 @@ class SemanticModel(_EmbeddingAlgorithm):
                 convert_to_numpy=True,
             )
         return self._normalize_vecs(np.array(vecs, dtype=np.float32))
+
+
+class SemanticText2Vec(SemanticModel):
+    """SemanticModel alias fixed to the text2vec backend."""
+
+    name: ClassVar[str] = "semantic_text2vec"
+
+    def __init__(self, params: dict[str, Any]) -> None:
+        params = {
+            "backend": "text2vec",
+            "model": "shibing624/text2vec-base-multilingual",
+            **params,
+        }
+        super().__init__(params)
+
+
+class SentenceTransformerLABSE(SemanticModel):
+    """SemanticModel alias fixed to the LaBSE sentence-transformers model."""
+
+    name: ClassVar[str] = "sentence_transformer_labse"
+
+    def __init__(self, params: dict[str, Any]) -> None:
+        params = {
+            "backend": "sentence_transformers",
+            "model": "sentence-transformers/LaBSE",
+            **params,
+        }
+        super().__init__(params)
+
+
+class SentenceTransformerMPNet(SemanticModel):
+    """SemanticModel alias fixed to the multilingual MPNet sentence-transformers model."""
+
+    name: ClassVar[str] = "sentence_transformer_mpnet"
+
+    def __init__(self, params: dict[str, Any]) -> None:
+        params = {
+            "backend": "sentence_transformers",
+            "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+            **params,
+        }
+        super().__init__(params)
 
 
 # ---------------------------------------------------------------------------

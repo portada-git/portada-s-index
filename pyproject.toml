@@ -13,9 +13,8 @@ dependencies = [
     # Core siempre requerido
     "pandas>=2.0",
     "numpy>=1.24",
-    # Algoritmos léxicos y fonéticos — sin estos, phonetic_dm y soundex no funcionan
+    # Algoritmos fonéticos
     "metaphone>=0.6",
-    "jellyfish>=1.0",
 ]
 
 [project.optional-dependencies]
