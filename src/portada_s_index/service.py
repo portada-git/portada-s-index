@@ -24,7 +24,7 @@ from portada_s_index.data.citation import CitationRow
 from portada_s_index.data.voice_list import VoiceList, Voice
 from portada_s_index.matrix import SimilarityMatrix
 from portada_s_index.normalize import normalize
-from portada_s_index.scoring import AlgorithmScore, TermResult, classify
+from portada_s_index.scoring import AlgorithmScore
 
 logger = logging.getLogger(__name__)
 
@@ -91,11 +91,13 @@ class SimilarityService:
         term_ids = [c.id for c in citations]
         voice_norms = [v.normalized for v in voices]
 
-        # Matrices de similitud: una por algoritmo activo
+        # Matrices de similitud: una por algoritmo ejecutado
         # algo_name → SimilarityMatrix
         matrices: dict[str, SimilarityMatrix] = {}
 
-        for algo_config in self._config.active:
+        execution_configs = self._config.execution_algorithms
+
+        for algo_config in execution_configs:
 
             # 1.1.3: instanceConfigurator — un Configurator por algoritmo
             configurator = self._cleaning.instance_configurator(
@@ -126,41 +128,41 @@ class SimilarityService:
             matrix = algorithm.process(preprocessed)
             matrices[algo_config.name] = matrix
 
-        # Clasificar cada término usando todos los scores
-        logger.debug("Clasificando %d términos...", len(citations))
+        # Construir resultados crudos para que el frontend clasifique dinámicamente.
+        logger.debug("Construyendo resultados crudos para %d términos...", len(citations))
         results = []
         for citation in citations:
-            result = self._classify_citation(
+            result = self._build_raw_citation_result(
                 citation=citation,
                 matrices=matrices,
                 voice_list=voice_list,
+                execution_configs=execution_configs,
             )
-            results.append(result.to_dict())
+            results.append(result)
 
         return results
 
     # ------------------------------------------------------------------
-    # Lógica interna de clasificación por término
+    # Lógica interna de resultados crudos por término
     # ------------------------------------------------------------------
 
-    def _classify_citation(
+    def _build_raw_citation_result(
         self,
         citation: CitationRow,
         matrices: dict[str, SimilarityMatrix],
         voice_list: VoiceList,
-    ) -> TermResult:
-        """Construye la lista de AlgorithmScores y llama a classify()."""
+        execution_configs: list[AlgorithmConfig] | None = None,
+    ) -> dict:
+        """Construye los scores por algoritmo sin emitir clasificación final."""
 
         term_id = citation.id
 
         # Verificar match exacto
         exact_match = voice_list.is_exact(term_id)
-        exact_entity = voice_list.entity_of(term_id) if exact_match else ""
-        exact_voice = term_id if exact_match else ""
 
         # Construir scores por algoritmo
         algo_scores: list[AlgorithmScore] = []
-        for algo_config in self._config.active:
+        for algo_config in execution_configs or self._config.execution_algorithms:
             matrix = matrices.get(algo_config.name)
             if matrix is None:
                 continue
@@ -184,16 +186,15 @@ class SimilarityService:
                 in_gray_zone=(piso <= score < threshold),
             ))
 
-        return classify(
-            term=citation.citation,
-            frequency=citation.frequency,
-            normalized=term_id,
-            scores=algo_scores,
-            consensus=self._config.consensus,
-            exact_match=exact_match,
-            exact_entity=exact_entity,
-            exact_voice=exact_voice,
-        )
+        return {
+            "term": citation.citation,
+            "frequency": citation.frequency,
+            "normalized": term_id,
+            "exact_match": exact_match,
+            "entity_type": voice_list.entity_type,
+            "allowed_algorithms": self._config.allowed_names_for_entity(voice_list.entity_type),
+            "algorithm_scores": [score.to_dict() for score in algo_scores],
+        }
 
     # ------------------------------------------------------------------
     # Utilidades
@@ -205,4 +206,4 @@ class SimilarityService:
 
     @property
     def active_algorithms(self) -> list[str]:
-        return self._config.active_names
+        return self._config.execution_algorithm_names

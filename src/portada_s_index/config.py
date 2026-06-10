@@ -53,6 +53,7 @@ class AlgorithmConfig:
 @dataclass
 class ConsensusConfig:
     min_votes: int                      # Mínimo de votos por entidad para CONSENSUS
+    dynamic_min_votes: bool = False     # True => mayoría absoluta de algoritmos ejecutados
 
     def __post_init__(self) -> None:
         if self.min_votes < 1:
@@ -67,6 +68,7 @@ class PipelineConfig:
     normalize: bool
     consensus: ConsensusConfig
     algorithms: dict[str, AlgorithmConfig]  # clave = name del algoritmo
+    algorithm_per_entity: dict[str, list[str]] = field(default_factory=dict)
 
     # ------------------------------------------------------------------
     # Constructores
@@ -90,8 +92,14 @@ class PipelineConfig:
             normalize = bool(data.get("normalize", True))
 
             raw_consensus = data.get("consensus", {})
+            raw_min_votes = raw_consensus.get("min_votes", 2)
+            dynamic_min_votes = (
+                isinstance(raw_min_votes, str)
+                and raw_min_votes.strip().lower() in {"dynamic", "dinamico", "dinámico", "n/2 + 1", "n/2+1"}
+            )
             consensus = ConsensusConfig(
-                min_votes=int(raw_consensus.get("min_votes", 2)),
+                min_votes=1 if dynamic_min_votes else int(raw_min_votes),
+                dynamic_min_votes=dynamic_min_votes,
             )
 
             algorithms: dict[str, AlgorithmConfig] = {}
@@ -117,6 +125,21 @@ class PipelineConfig:
                     params=dict(raw.get("params", {})),
                 )
 
+            algorithm_per_entity: dict[str, list[str]] = {}
+            for entity_type, raw_names in data.get("algorithm_per_entity", {}).items():
+                if not isinstance(raw_names, list):
+                    raise ConfigValidationError(
+                        f"algorithm_per_entity.{entity_type} debe ser una lista"
+                    )
+                names = [str(name) for name in raw_names]
+                missing = [name for name in names if name not in algorithms]
+                if missing:
+                    raise ConfigValidationError(
+                        f"algorithm_per_entity.{entity_type} referencia algoritmos no definidos: "
+                        f"{', '.join(missing)}"
+                    )
+                algorithm_per_entity[str(entity_type)] = names
+
         except (KeyError, TypeError, ValueError) as exc:
             raise ConfigValidationError(f"Error parseando configuración: {exc}") from exc
 
@@ -125,6 +148,7 @@ class PipelineConfig:
             normalize=normalize,
             consensus=consensus,
             algorithms=algorithms,
+            algorithm_per_entity=algorithm_per_entity,
         )
 
     # ------------------------------------------------------------------
@@ -137,8 +161,42 @@ class PipelineConfig:
         return [a for a in self.algorithms.values() if a.enabled]
 
     @property
+    def execution_algorithms(self) -> list[AlgorithmConfig]:
+        """Algoritmos que debe calcular el backend."""
+        if self.algorithm_per_entity:
+            return list(self.algorithms.values())
+        return self.active
+
+    @property
     def active_names(self) -> list[str]:
         return [a.name for a in self.active]
+
+    @property
+    def execution_algorithm_names(self) -> list[str]:
+        return [a.name for a in self.execution_algorithms]
+
+    def active_for_entity(self, entity_type: str) -> list[AlgorithmConfig]:
+        """Algoritmos activos para el tipo de entidad indicado."""
+        if not self.algorithm_per_entity:
+            return self.active
+        if entity_type not in self.algorithm_per_entity:
+            raise ConfigValidationError(
+                f"algorithm_per_entity no define algoritmos para entity_type={entity_type!r}"
+            )
+        return [self.algorithms[name] for name in self.algorithm_per_entity[entity_type]]
+
+    def active_names_for_entity(self, entity_type: str) -> list[str]:
+        return [a.name for a in self.active_for_entity(entity_type)]
+
+    def allowed_names_for_entity(self, entity_type: str) -> list[str]:
+        """Algoritmos que el frontend puede seleccionar para una entidad."""
+        if not self.algorithm_per_entity:
+            return self.execution_algorithm_names
+        if entity_type not in self.algorithm_per_entity:
+            raise ConfigValidationError(
+                f"algorithm_per_entity no define algoritmos para entity_type={entity_type!r}"
+            )
+        return list(self.algorithm_per_entity[entity_type])
 
     def get(self, name: str) -> AlgorithmConfig | None:
         return self.algorithms.get(name)
@@ -152,7 +210,7 @@ class PipelineConfig:
             "version": self.version,
             "normalize": self.normalize,
             "consensus": {
-                "min_votes": self.consensus.min_votes,
+                "min_votes": "dynamic" if self.consensus.dynamic_min_votes else self.consensus.min_votes,
             },
             "algorithms": {
                 name: {
@@ -163,4 +221,5 @@ class PipelineConfig:
                 }
                 for name, a in self.algorithms.items()
             },
+            "algorithm_per_entity": self.algorithm_per_entity,
         }

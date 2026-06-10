@@ -143,7 +143,7 @@ class JaroWinkler(Algorithm):
 
 
 # ---------------------------------------------------------------------------
-# Algoritmo 3/4/5: NGram (n configurable)
+# Algoritmo 3/4/5: NGram (n configurable)  REVISAR
 # ---------------------------------------------------------------------------
 
 class NGram(Algorithm):

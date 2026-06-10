@@ -1,7 +1,7 @@
 [project]
 name = "portada-s-index"
-version = "0.1.3"
-description = "Biblioteca de algoritmos de similitud para desambiguación de términos históricos"
+version = "0.2.0"
+description = "Biblioteca de algoritmos de similitud para desambiguaciÃ³n de tÃ©rminos histÃ³ricos"
 readme = "README.md"
 authors = [
     { name = "danro-dev", email = "drgrassnk445@gmail.com" }
@@ -13,7 +13,7 @@ dependencies = [
     # Core siempre requerido
     "pandas>=2.0",
     "numpy>=1.24",
-    # Algoritmos fonéticos
+    # Algoritmos fonÃ©ticos
     "metaphone>=0.6",
 ]
 
@@ -23,7 +23,7 @@ with-embeddings = [
     "sentence-transformers>=2.0",
     "text2vec>=1.3",
 ]
-# Embeddings FastText (requiere compilación C++ en algunos entornos)
+# Embeddings FastText (requiere compilaciÃ³n C++ en algunos entornos)
 with-fasttext = [
     "fasttext>=0.9",
 ]
@@ -52,9 +52,10 @@ packages = ["src/portada_s_index"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "0.2.0"
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "0.2.0"
 strict = false
 ignore_missing_imports = true
+

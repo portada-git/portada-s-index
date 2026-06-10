@@ -46,7 +46,7 @@ except ImportError:
     _ST_AVAILABLE = False
 
 try:
-    from transformers import AutoTokenizer as _AutoTokenizer, AutoModel as _AutoModel
+    from transformers import AutoTokenizer as _AutoTokenizer, T5EncoderModel as _T5EncoderModel
     _TRANSFORMERS_AVAILABLE = True
 except ImportError:
     _TRANSFORMERS_AVAILABLE = False
@@ -430,9 +430,10 @@ class ByT5Model(_EmbeddingAlgorithm):
     Requiere: `pip install transformers torch`.
 
     Params:
-        model   (str): Nombre del modelo en HuggingFace Hub.
-                       Default "google/byt5-small".
+        model   (str): Nombre del modelo encoder en HuggingFace Hub.
+                       Default "agusnieto77/byt5-portada-contrastivo".
         device  (str): "cpu" | "cuda". Default "cpu".
+        max_length (int): Longitud máxima de tokenización. Default 128.
     """
 
     name: ClassVar[str] = "byt5"
@@ -447,17 +448,36 @@ class ByT5Model(_EmbeddingAlgorithm):
             raise AlgorithmNotAvailableError(
                 "byt5 requiere 'torch'.\npip install torch"
             )
-        model_name = params.get("model", "google/byt5-small")
+        model_name = params.get("model", "agusnieto77/byt5-portada-contrastivo")
         self._device = params.get("device", "cpu")
+        self._max_length = int(params.get("max_length", 128))
+        self._torch_dtype = self._resolve_torch_dtype(params.get("torch_dtype", "float32"))
 
         self._tokenizer, self._model_nn = ModelCache.get_model(
-            f"byt5_{model_name}_{self._device}",
+            f"byt5_{model_name}_{self._device}_{params.get('torch_dtype', 'float32')}_{self._max_length}",
             lambda: self._load(model_name),
+        )
+
+    def _resolve_torch_dtype(self, dtype_name: str):
+        dtype_name = str(dtype_name).lower()
+        if dtype_name in {"float32", "fp32"}:
+            return _torch.float32
+        if dtype_name in {"float16", "fp16"}:
+            return _torch.float16
+        if dtype_name in {"bfloat16", "bf16"}:
+            return _torch.bfloat16
+        if dtype_name == "auto":
+            return "auto"
+        raise ValueError(
+            "byt5 params.torch_dtype debe ser 'float32', 'float16', 'bfloat16' o 'auto'"
         )
 
     def _load(self, model_name: str):
         tokenizer = _AutoTokenizer.from_pretrained(model_name)
-        model = _AutoModel.from_pretrained(model_name).to(self._device)
+        model = _T5EncoderModel.from_pretrained(
+            model_name,
+            torch_dtype=self._torch_dtype,
+        ).to(self._device)
         model.eval()
         return tokenizer, model
 
@@ -466,12 +486,25 @@ class ByT5Model(_EmbeddingAlgorithm):
         for i in range(0, len(texts), batch_size):
             batch = texts[i: i + batch_size]
             inputs = self._tokenizer(
-                batch, return_tensors="pt", padding=True, truncation=True
+                batch,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=self._max_length,
             )
             inputs = {k: v.to(self._device) for k, v in inputs.items()}
             with _torch.no_grad():
-                outputs = self._model_nn.encoder(**inputs)
-            vecs = outputs.last_hidden_state.mean(dim=1).cpu().numpy()
+                outputs = self._model_nn(**inputs)
+            mask = (
+                inputs["attention_mask"]
+                .unsqueeze(-1)
+                .expand(outputs.last_hidden_state.size())
+                .float()
+            )
+            vecs = (
+                (outputs.last_hidden_state.float() * mask).sum(1)
+                / mask.sum(1).clamp(min=1e-9)
+            ).cpu().numpy()
             all_vecs.append(vecs)
         result = np.concatenate(all_vecs, axis=0).astype(np.float32)
         return self._normalize_vecs(result)
