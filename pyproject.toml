@@ -1,6 +1,6 @@
 [project]
 name = "portada-s-index"
-version = "0.2.0"
+version = "0.2.1"
 description = "Biblioteca de algoritmos de similitud para desambiguaciÃ³n de tÃ©rminos histÃ³ricos"
 readme = "README.md"
 authors = [
@@ -52,10 +52,10 @@ packages = ["src/portada_s_index"]
 
 [tool.ruff]
 line-length = 100
-target-version = "0.2.0"
+target-version = "py310"
 
 [tool.mypy]
-python_version = "0.2.0"
+python_version = "3.10"
 strict = false
 ignore_missing_imports = true
 

@@ -118,7 +118,7 @@ class _ModelStub:
 
 class ByT5BFloat16Tests(unittest.TestCase):
     def test_encode_casts_bfloat16_hidden_state_before_numpy(self):
-        previous_torch = semantic_module._torch
+        previous_torch = getattr(semantic_module, "_torch", None)
         semantic_module._torch = _TorchStub
         try:
             model = object.__new__(semantic_module.ByT5Model)
@@ -129,7 +129,11 @@ class ByT5BFloat16Tests(unittest.TestCase):
 
             vecs = model._encode(["bergantin"], batch_size=1)
         finally:
-            semantic_module._torch = previous_torch
+            if previous_torch is None:
+                if hasattr(semantic_module, "_torch"):
+                    delattr(semantic_module, "_torch")
+            else:
+                semantic_module._torch = previous_torch
 
         self.assertEqual(vecs.dtype, np.float32)
         self.assertEqual(vecs.shape, (1, 2))

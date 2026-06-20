@@ -68,6 +68,12 @@ def _phonetic_sim_from_codes(codes_a: list[str], codes_b: list[str]) -> float:
     return best
 
 
+def _normalized_levenshtein_ratio(a: str, b: str) -> float:
+    """Ratio textual 0-1 sobre strings ya normalizados."""
+    max_len = max(len(a), len(b), 1)
+    return 1.0 - _levenshtein(a, b) / max_len
+
+
 # ---------------------------------------------------------------------------
 # Algoritmo 7: Double Metaphone
 # ---------------------------------------------------------------------------
@@ -94,8 +100,32 @@ class PhoneticDM(Algorithm):
                 "phonetic_dm requiere 'metaphone'.\n"
                 "Instala con: pip install metaphone"
             )
+        self._min_exact_code_length = int(params.get("min_exact_code_length", 2))
+        self._min_text_ratio_for_exact_code = float(
+            params.get("min_text_ratio_for_exact_code", 0.55)
+        )
 
     def similarity(self, a: str, b: str) -> float:
+        norm_a = normalize(a).replace(" ", "")
+        norm_b = normalize(b).replace(" ", "")
         codes_a = _phonetic_codes_dm(a)
         codes_b = _phonetic_codes_dm(b)
+        if not codes_a or not codes_b:
+            return 0.0
+
+        exact_matches = [
+            ca
+            for ca in codes_a
+            for cb in codes_b
+            if ca == cb and ca
+        ]
+        if exact_matches:
+            text_ratio = _normalized_levenshtein_ratio(norm_a, norm_b)
+            has_reliable_code = any(
+                len(code) >= self._min_exact_code_length for code in exact_matches
+            )
+            if has_reliable_code and text_ratio >= self._min_text_ratio_for_exact_code:
+                return 1.0
+            return text_ratio
+
         return _phonetic_sim_from_codes(codes_a, codes_b)

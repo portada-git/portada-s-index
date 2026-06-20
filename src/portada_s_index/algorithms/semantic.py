@@ -15,6 +15,8 @@ Las tres últimas tienen dependencias opcionales pesadas.
 from __future__ import annotations
 
 import hashlib
+import importlib
+import os
 from pathlib import Path
 from typing import Any, ClassVar
 
@@ -396,15 +398,46 @@ class FastTextModel(_EmbeddingAlgorithm):
                 "fasttext requiere 'model_path' en params: "
                 "ruta al archivo .bin del modelo."
             )
+        path = self._ensure_model_path(params)
+        self._model_path = path
+        self._model = ModelCache.get_model(
+            f"fasttext_{path}",
+            lambda: _fasttext.load_model(str(path)),
+        )
+
+    def _ensure_model_path(self, params: dict[str, Any]) -> Path:
+        model_path = params.get("model_path")
         path = Path(model_path)
         if not path.exists():
+            if params.get("auto_download", False):
+                return self._download_model(params, path)
             raise FileNotFoundError(
                 f"Modelo FastText no encontrado: {path}\n"
                 f"Descarga el modelo desde https://fasttext.cc/docs/en/crawl-vectors.html"
             )
-        self._model = ModelCache.get_model(
-            f"fasttext_{model_path}",
-            lambda: _fasttext.load_model(str(path)),
+        return path
+
+    def _download_model(self, params: dict[str, Any], requested_path: Path) -> Path:
+        """Descarga explícita del modelo FastText si params.auto_download=True."""
+        lang = str(params.get("lang", "es"))
+        cache_dir = Path(params.get("cache_dir") or requested_path.parent)
+        cache_dir.mkdir(parents=True, exist_ok=True)
+
+        fasttext_util = importlib.import_module("fasttext.util")
+        previous_cwd = Path.cwd()
+        try:
+            os.chdir(cache_dir)
+            fasttext_util.download_model(lang, if_exists="ignore")
+        finally:
+            os.chdir(previous_cwd)
+
+        downloaded_path = cache_dir / f"cc.{lang}.300.bin"
+        if requested_path.exists():
+            return requested_path
+        if downloaded_path.exists():
+            return downloaded_path
+        raise FileNotFoundError(
+            f"FastText auto_download no generó el modelo esperado: {requested_path}"
         )
 
     def _encode(self, texts: list[str]) -> np.ndarray:
