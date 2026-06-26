@@ -225,6 +225,38 @@ class _EmbeddingAlgorithm(Algorithm):
                 )
         return SimilarityMatrix(algorithm_name=self.name, entries=entries)
 
+    def best_matches(self, data: PreprocessedData) -> dict[str, tuple[str, float]]:
+        """
+        Calcula solo la mejor voz por término usando batches.
+
+        Evita materializar una matriz completa de todos los términos contra
+        todas las voces, que puede ser enorme en entidades como port.
+        """
+        self._assert_preprocessed(data)
+
+        voice_vecs: np.ndarray = data.extras["voice_vecs"]
+        if len(data.voices) == 0:
+            return {}
+
+        term_batch_size = int(self.params.get("term_batch_size", 128))
+        best_by_term: dict[str, tuple[str, float]] = {}
+
+        for start in range(0, len(data.terms), term_batch_size):
+            batch_terms = data.terms[start: start + term_batch_size]
+            term_vecs = self._encode(batch_terms)
+            cosine = np.dot(term_vecs, voice_vecs.T)
+            sim_matrix = np.clip((cosine + 1.0) / 2.0, 0.0, 1.0)
+            best_indexes = np.argmax(sim_matrix, axis=1)
+            best_scores = sim_matrix[np.arange(len(batch_terms)), best_indexes]
+
+            for term, voice_index, score in zip(batch_terms, best_indexes, best_scores):
+                best_by_term[term] = (
+                    data.voices[int(voice_index)],
+                    round(float(score), 6),
+                )
+
+        return best_by_term
+
     def batch(self, query: str, candidates: list[str]) -> list[float]:
         """Vectoriza query y candidatos en lote para eficiencia."""
         texts = [normalize_semantic(query)] + [normalize_semantic(c) for c in candidates]

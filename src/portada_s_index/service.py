@@ -22,7 +22,6 @@ from portada_s_index.cleaning import PortadaCleaningLayer, Configurator
 from portada_s_index.config import AlgorithmConfig, PipelineConfig
 from portada_s_index.data.citation import CitationRow
 from portada_s_index.data.voice_list import VoiceList, Voice
-from portada_s_index.matrix import SimilarityMatrix
 from portada_s_index.normalize import normalize
 from portada_s_index.scoring import AlgorithmScore
 
@@ -91,9 +90,9 @@ class SimilarityService:
         term_ids = [c.id for c in citations]
         voice_norms = [v.normalized for v in voices]
 
-        # Matrices de similitud: una por algoritmo ejecutado
-        # algo_name → SimilarityMatrix
-        matrices: dict[str, SimilarityMatrix] = {}
+        # Mejores matches por algoritmo: algo_name → term → (voice, score)
+        # Esta estructura evita materializar matrices completas término×voz.
+        best_matches_by_algorithm: dict[str, dict[str, tuple[str, float]]] = {}
 
         execution_configs = self._config.execution_algorithms
 
@@ -123,10 +122,9 @@ class SimilarityService:
             cache_key = f"preprocessed_{algo_config.name}_{voice_list.entity_type}"
             ModelCache.get_model(cache_key, lambda p=preprocessed: p)
 
-            # 1.1.8 / 1.1.9: process — calcula la SimilarityMatrix
-            logger.debug("Procesando similitudes para %s...", algo_config.name)
-            matrix = algorithm.process(preprocessed)
-            matrices[algo_config.name] = matrix
+            # 1.1.8 / 1.1.9: best_matches — calcula solo la mejor voz por término.
+            logger.debug("Procesando mejores similitudes para %s...", algo_config.name)
+            best_matches_by_algorithm[algo_config.name] = algorithm.best_matches(preprocessed)
 
         # Construir resultados crudos para que el frontend clasifique dinámicamente.
         logger.debug("Construyendo resultados crudos para %d términos...", len(citations))
@@ -134,7 +132,7 @@ class SimilarityService:
         for citation in citations:
             result = self._build_raw_citation_result(
                 citation=citation,
-                matrices=matrices,
+                best_matches_by_algorithm=best_matches_by_algorithm,
                 voice_list=voice_list,
                 execution_configs=execution_configs,
             )
@@ -149,7 +147,7 @@ class SimilarityService:
     def _build_raw_citation_result(
         self,
         citation: CitationRow,
-        matrices: dict[str, SimilarityMatrix],
+        best_matches_by_algorithm: dict[str, dict[str, tuple[str, float]]],
         voice_list: VoiceList,
         execution_configs: list[AlgorithmConfig] | None = None,
     ) -> dict:
@@ -163,22 +161,22 @@ class SimilarityService:
         # Construir scores por algoritmo
         algo_scores: list[AlgorithmScore] = []
         for algo_config in execution_configs or self._config.execution_algorithms:
-            matrix = matrices.get(algo_config.name)
-            if matrix is None:
+            best_matches = best_matches_by_algorithm.get(algo_config.name)
+            if best_matches is None:
                 continue
 
-            best = matrix.best_for(term_id)
+            best = best_matches.get(term_id)
             if best is None:
                 continue
 
-            best_entity = voice_list.entity_of(best.voice_id)
+            best_voice, score = best
+            best_entity = voice_list.entity_of(best_voice)
             threshold = algo_config.threshold
             piso, techo = algo_config.gray_zone
-            score = best.similarity_value
 
             algo_scores.append(AlgorithmScore(
                 algorithm=algo_config.name,
-                best_voice=best.voice_id,
+                best_voice=best_voice,
                 best_entity=best_entity,
                 score=score,
                 threshold=threshold,

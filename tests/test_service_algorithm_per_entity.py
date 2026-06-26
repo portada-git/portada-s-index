@@ -51,6 +51,8 @@ Similarity = matrix_module.Similarity
 
 
 class FakeAlgorithm:
+    process_called = False
+
     def __init__(self, name):
         self.name = name
 
@@ -61,15 +63,21 @@ class FakeAlgorithm:
         return (terms, voices)
 
     def process(self, preprocessed):
+        FakeAlgorithm.process_called = True
         return SimilarityMatrix(
             self.name,
             [Similarity("sevilla", "sevilla", self.name, 1.0)],
         )
 
+    def best_matches(self, preprocessed):
+        terms, _voices = preprocessed
+        return {term: ("sevilla", 1.0) for term in terms}
+
 
 class ServiceAlgorithmPerEntityTests(unittest.TestCase):
     def test_evaluate_runs_all_configured_algorithms_and_exposes_entity_allowed_filter(self):
         calls = []
+        FakeAlgorithm.process_called = False
 
         def fake_build(config):
             calls.append(config.name)
@@ -107,6 +115,7 @@ class ServiceAlgorithmPerEntityTests(unittest.TestCase):
             [score["algorithm"] for score in results[0]["algorithm_scores"]],
             ["levenshtein_ratio", "jaro_winkler", "ngram_3"],
         )
+        self.assertFalse(FakeAlgorithm.process_called)
         self.assertNotIn("classification", results[0])
         self.assertNotIn("entity", results[0])
         self.assertNotIn("votes", results[0])

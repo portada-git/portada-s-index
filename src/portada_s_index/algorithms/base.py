@@ -123,6 +123,27 @@ class Algorithm(ABC):
                 )
         return SimilarityMatrix(algorithm_name=self.name, entries=entries)
 
+    def best_matches(self, data: PreprocessedData) -> dict[str, tuple[str, float]]:
+        """
+        Calcula solo la mejor voz por término.
+
+        Esta ruta evita materializar la matriz completa término×voz. Es la
+        API que debe usar SimilarityService para datasets grandes.
+        """
+        self._assert_preprocessed(data)
+
+        best_by_term: dict[str, tuple[str, float]] = {}
+        for term in data.terms:
+            best_voice = ""
+            best_score = float("-inf")
+            for voice, score in zip(data.voices, self.batch(term, data.voices)):
+                if score > best_score:
+                    best_voice = voice
+                    best_score = score
+            if best_voice:
+                best_by_term[term] = (best_voice, round(float(best_score), 6))
+        return best_by_term
+
     # ------------------------------------------------------------------
     # Métodos de cálculo
     # ------------------------------------------------------------------
