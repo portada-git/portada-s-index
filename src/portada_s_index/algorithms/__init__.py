@@ -46,6 +46,9 @@ REGISTRY: dict[str, type[Algorithm]] = {
     "ngram_3":           NGram3,
     "ngram_4":           NGram4,
     "phonetic_dm":       PhoneticDM,
+    "token_jaccard":     TokenJaccard,
+    # Backward-compatible alias for old configs/results. TokenJaccard is a
+    # lexical algorithm, not a semantic one; new configs should use token_jaccard.
     "semantica":         TokenJaccard,
     "text2vec":          CharCosine,
     "semantic_model":    SemanticModel,

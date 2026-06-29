@@ -1,6 +1,6 @@
 [project]
 name = "portada-s-index"
-version = "0.2.2"
+version = "0.2.3"
 description = "Biblioteca de algoritmos de similitud para desambiguaciÃ³n de tÃ©rminos histÃ³ricos"
 readme = "README.md"
 authors = [

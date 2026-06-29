@@ -84,7 +84,7 @@ class TokenJaccard(Algorithm):
                     presente en el JSON para documentación.
     """
 
-    name: ClassVar[str] = "semantica"
+    name: ClassVar[str] = "token_jaccard"
 
     def similarity(self, a: str, b: str) -> float:
         tokens_a = set(tokenize_semantic(a))
